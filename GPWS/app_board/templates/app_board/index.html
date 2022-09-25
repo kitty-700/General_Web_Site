@@ -9,7 +9,7 @@
     <font color="red"> THIS IS ARTICLE PAGE </font>
     <ul>
         {% for article in lastest_article_list %}
-        <li><a href="/app_board"/>{{ article.id }} : {{ article.title }} </a></li>
+        <li><a href="/app_board/{{ article.id }}"> : {{ article.title }} </a></li>
         {% endfor %}
     </ul>
 {% else %}
