@@ -5,7 +5,7 @@ from datetime import datetime
 
 class Article(models.Model):
     title = models.CharField(max_length=300, null=False)
-    main_text = models.CharField(max_length=10000, null=True)
+    contents = models.CharField(max_length=10000, null=True)
 
     create_dt = models.DateTimeField(default=datetime.now)
     modify_dt = models.DateTimeField(default=datetime.now)
@@ -17,7 +17,7 @@ class Article(models.Model):
 
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.SET_NULL, null=True)
-    main_text = models.CharField(max_length=10000)
+    contents = models.CharField(max_length=10000)
 
     create_dt = models.DateTimeField(default=datetime.now)
     modify_dt = models.DateTimeField(default=datetime.now)

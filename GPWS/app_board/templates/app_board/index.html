@@ -15,7 +15,7 @@
 {% else %}
     <p>No Articles there</p>
     <p>아직은 Admin 페이지에서 직접 데이터를 채워줘야 합니다.</p>
-
 {% endif %}
+    <div><a href="{% url 'app_board:write_article' %}"><button>글 작성</button></a></div>
 </body>
 </html>
