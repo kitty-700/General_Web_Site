@@ -1,11 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block contents %}
+
+{% autoescape off %}
+
+<hr>
+<p> 글 제목 </p>
 <p> {{ article.title }} </p>
-<p> {{ article.main_text }} </p>
-</body>
-</html>
+
+<hr>
+<p> 글 내용 </p>
+{{ article.contents }}
+<hr>
+{% endautoescape %}
+
+{% endblock %}

@@ -56,7 +56,7 @@ ROOT_URLCONF = 'GPWS.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['app_board/templates/app_board'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
