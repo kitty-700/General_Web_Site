@@ -39,3 +39,15 @@ def write_article(request:WSGIRequest):
                 for val in write_form.errors.values():
                     context['error'] = val
             return render(request, 'app_board/write_article.html', context)
+
+def write_comment(request:WSGIRequest, article_id:int):
+    print(request.POST)
+    if request.method == 'POST':
+        comment = Comment(
+            article_id=article_id,
+            contents=request.POST['comment'],
+        )
+        comment.save()
+    article = get_object_or_404(Article, pk=article_id)
+    context = { 'article' : article }
+    return render(request, 'app_board/read_article.html', context)
