@@ -1,25 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <div>게시판 글 작성 중 . . . </div>
-    <form action="" method="POST">
-        {% csrf_token %}
+{% extends "base.html" %}
 
-        {% for form in forms %}
-        <div>
-            <label for="{{ form.id_for_label }}">{{ form.label }}</label>
-            {{ form }}
-        </div>
-        {% endfor %}
+{% block contents %}
 
-        {% if error %}
-        {{ error }}
-        {% endif %}
-        <button type="submit">완성</button>
-    </form>
-</body>
-</html>
+<div>게시판 글 작성 중 . . . </div>
+<form action="" method="POST">
+    {% csrf_token %}
+
+    {% for form in forms %}
+    <div>
+        <label for="{{ form.id_for_label }}">{{ form.label }}</label>
+        {{ form }}
+    </div>
+    {% endfor %}
+
+    {% if error %}
+    {{ error }}
+    {% endif %}
+    <button type="submit">완성</button>
+</form>
+
+{% endblock %}
