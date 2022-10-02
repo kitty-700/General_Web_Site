@@ -2,7 +2,6 @@
 
 {% block contents %}
 
-{% autoescape off %}
 
 <hr>
 <p> 글 제목 </p>
@@ -10,9 +9,11 @@
 
 <hr>
 <p> 글 내용 </p>
+{% autoescape off %}
 {{ article.contents }}
-<hr>
 {% endautoescape %}
+<hr>
+
 <form action="{% url 'app_board:write_comment' article.id %}" method="POST">
 
     {% csrf_token %}
@@ -21,5 +22,15 @@
     <button type="submit">댓글 입력</button>
 </form>
 
+{% if comments %}
+    <font color="grey"> 댓글 </font>
+    <ul>
+        {% for comment in comments %}
+        <li> {{ comment.contents }} </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No Reply there</p>
+{% endif %}
 
 {% endblock %}

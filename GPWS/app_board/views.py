@@ -12,7 +12,11 @@ def index(request:WSGIRequest):
 
 def read_article(request:WSGIRequest, article_id:int):
     article = get_object_or_404(Article, pk=article_id)
-    context = { 'article' : article }
+    try:
+        comments = get_list_or_404(Comment, article=article_id)
+    except:
+        comments = []
+    context = { 'article' : article, 'comments' : comments}
     return render(request, 'app_board/read_article.html', context)
 
 def write_article(request:WSGIRequest):
@@ -41,7 +45,7 @@ def write_article(request:WSGIRequest):
             return render(request, 'app_board/write_article.html', context)
 
 def write_comment(request:WSGIRequest, article_id:int):
-    print(request.POST)
+    print(request)
     if request.method == 'POST':
         comment = Comment(
             article_id=article_id,
@@ -49,5 +53,5 @@ def write_comment(request:WSGIRequest, article_id:int):
         )
         comment.save()
     article = get_object_or_404(Article, pk=article_id)
-    context = { 'article' : article }
-    return render(request, 'app_board/read_article.html', context)
+
+    return redirect('/app_board/%s/' % (article_id))
