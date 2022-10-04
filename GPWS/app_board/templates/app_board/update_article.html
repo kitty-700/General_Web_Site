@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block contents %}
+
+<div>게시판 글 수정 중 . . . </div>
+<form action="" method="POST">
+    {% csrf_token %}
+
+    {% for form in forms %}
+    <div>
+        <label for="{{ form.id_for_label }}">{{ form.label }}</label>
+        {{ form }}
+    </div>
+    {% endfor %}
+
+    {% if error %}
+    {{ error }}
+    {% endif %}
+    <button type="submit">수정</button>
+</form>
+
+{% endblock %}
