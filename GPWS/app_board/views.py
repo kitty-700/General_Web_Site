@@ -12,6 +12,8 @@ def index(request:WSGIRequest):
 
 def read_article(request:WSGIRequest, article_id:int):
     article = get_object_or_404(Article, pk=article_id)
+    article.view_cnt += 1
+    article.save()
     try:
         comments = get_list_or_404(Comment, article=article_id)
     except:
