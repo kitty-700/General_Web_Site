@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app_board.apps.AppBoardConfig'
 ]
-INSTALLED_APPS += ('django_summernote', )
+# INSTALLED_APPS += ('django_summernote', )
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -129,29 +129,3 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-
-# Summernote 선택 설정
-SUMMERNOTE_THEME = 'bs3'
-
-SUMMERNOTE_CONFIG = {
-    'attachment_file_size_limit':1024*1024*100, # 100 MB
-    'summernote': {
-        'width':'100%',
-        'height':1000,
-        'lang':'ko-KR',
-        'toolbar':[
-            ['style', ['style']],
-            ['font', ['bold','strikethrough','clear']],
-            ['fontname',['fontname']],
-            ['fontsize',['fontsize']],
-            ['color',['color']],
-            ['para',['ul', 'ol']],
-            ['height',['height']],
-            ['table', ['table']],
-            ['insert', ['link','picture','hr']],
-            ['view',['fullscreen','codeview']],
-            ['help',['help']],
-        ]
-
-    }
-}

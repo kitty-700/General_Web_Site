@@ -1,18 +1,14 @@
 from django import forms
 from .models import Article
-from django_summernote.fields import SummernoteTextField
-from django_summernote.widgets import SummernoteWidget
 
-class ArticleWriteForm(forms.ModelForm):
+class ArticleEditForm(forms.ModelForm):
     title = forms.CharField(
         label='글 제목',
-        widget=forms.TextInput(
-            attrs={
-                'placeholder':'게시글 제목'
-            }),
-        required=True,
     )
-    contents = SummernoteTextField()
+    
+    contents = forms.CharField(
+        label='글 내용',
+    )
 
     field_order = [
         'title',
@@ -25,11 +21,9 @@ class ArticleWriteForm(forms.ModelForm):
             'title',
             'contents',
         ]
-        widgets = {
-            'contents' : SummernoteWidget
-        }
 
-    def clean(self):
+    def clean(self): # override 된 메소드. 값이 비어있는지를 체크한다.
+        print("clean called")
         cleaned_data = super().clean()
 
         title = cleaned_data.get('title', '')

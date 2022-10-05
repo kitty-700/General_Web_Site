@@ -1,7 +1,7 @@
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import *
 
-from .ArticleWriteForm import ArticleWriteForm
+from .ArticleEditForm import ArticleEditForm
 from .models import *
 
 # Create your views here.
@@ -26,12 +26,14 @@ def write_article(request:WSGIRequest):
     ip = get_client_ip(request)
 
     if request.method == 'GET': # 1차로는 GET 으로 Form을 얻고
-        write_form = ArticleWriteForm()
+        write_form = ArticleEditForm()
         context['forms'] = write_form
         print(write_form)
         return render(request, 'app_board/write_article.html', context)
     elif request.method == 'POST': # 2차로는 받아온 Form에 내용을 넣어 입력 처리
-        write_form = ArticleWriteForm(request.POST)
+        print(request)
+        write_form = ArticleEditForm(request.POST)
+        print(write_form)
         if write_form.is_valid():
             author = ip # 추후 User.objects.get(user_id=login_session) 를 통해 User nickname 식별
             article = Article(
@@ -67,11 +69,11 @@ def update_article(request:WSGIRequest, article_id:int):
         return redirect('/app_board/')
 
     if request.method == 'GET': # 1차로는 GET 으로 Form을 얻고
-        write_form = ArticleWriteForm(instance=article)
+        write_form = ArticleEditForm(instance=article)
         context['forms'] = write_form
         return render(request, 'app_board/update_article.html', context)
     elif request.method == 'POST': # 2차로는 받아온 Form에 내용을 넣어 입력 처리
-        write_form = ArticleWriteForm(request.POST)
+        write_form = ArticleEditForm(request.POST)
         if write_form.is_valid():
             article.title = write_form.title
             article.contents = write_form.contents
