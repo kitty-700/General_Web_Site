@@ -12,8 +12,28 @@ def index(request:WSGIRequest):
 
 def read_article(request:WSGIRequest, article_id:int):
     article = get_object_or_404(Article, pk=article_id)
-    article.view_cnt += 1
-    article.save()
+
+    ip = get_client_ip(request)
+
+
+    try: # 조회수 중복집계 방지
+        print(article)
+        print(ip)
+        ViewCheck.objects.get(
+            article=article,
+            author=ip,
+        )
+    except ViewCheck.DoesNotExist:
+        print("없어서 만들려구")
+        vc = ViewCheck(
+            article=article,
+            author=ip,
+        )
+        vc.save()
+        article.view_cnt += 1
+        article.save()
+
+
     try:
         comments = get_list_or_404(Comment, article=article_id)
     except:
@@ -28,12 +48,9 @@ def write_article(request:WSGIRequest):
     if request.method == 'GET': # 1차로는 GET 으로 Form을 얻고
         write_form = ArticleEditForm()
         context['forms'] = write_form
-        print(write_form)
         return render(request, 'app_board/write_article.html', context)
     elif request.method == 'POST': # 2차로는 받아온 Form에 내용을 넣어 입력 처리
-        print(request)
         write_form = ArticleEditForm(request.POST)
-        print(write_form)
         if write_form.is_valid():
             author = ip # 추후 User.objects.get(user_id=login_session) 를 통해 User nickname 식별
             article = Article(

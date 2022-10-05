@@ -31,3 +31,16 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.contents
+
+class ViewCheck(models.Model):
+    # PK 명시
+    id = models.AutoField(primary_key=True)
+    # Auto Fill
+    article = models.ForeignKey(Article, on_delete=models.SET_NULL, null=True)
+    author  = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.author + " in [" + str(self.article)+"]"
+
+    class Meta:
+        unique_together = ('article', 'author')
