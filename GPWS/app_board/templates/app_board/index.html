@@ -14,17 +14,30 @@
 {% load template_list %}
 {% if lastest_article_list %}
     <font color="black"> THIS IS ARTICLE PAGE </font>
-    <ul>
-
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>글쓴이</th>
+            <th>작성시각</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for article in lastest_article_list %}
-        <li>
-            <font color="grey" size=2>{{ article.id }}</font>
-            <a href="/app_board/{{ article.id }}"> {{ article.title }}
-                <font color="grey" size=2>[{{ view_cnt_list|return_item:forloop.counter0 }}]</font>
-            </a>
-        </li>
+        <tr>
+            <td>    <font color="black" size=3>{{ article.id }}</font>  </td>
+            <td>     <a href="/app_board/{{ article.id }}"> {{ article.title }}
+                        <font color="grey" size=2>[{{ view_cnt_list|return_item:forloop.counter0 }}]</font>
+                    </a>
+            </td>
+            <td>    <font color="black" size=3>{{ article.author }}</font> </td>
+            <td>    <font color="black" size=3>{{ article.create_dt|date:'Y-m-d H:i' }} </p></font> </td>
+        </tr>
         {% endfor %}
-    </ul>
+    </tbody>
+</table>
 {% else %}
     <p>No Articles there</p>
 {% endif %}
