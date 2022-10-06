@@ -68,7 +68,7 @@ def write_article(request:WSGIRequest):
 def block_article(request:WSGIRequest, article_id:int, block_tp:int):
     ip = get_client_ip(request)
 
-    if ip != admin_ip:
+    if ip not in admin_ip:
         return index(request)
 
     article = get_object_or_404(Article, pk=article_id)
