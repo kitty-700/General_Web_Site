@@ -9,6 +9,11 @@
         line-height: 1.5em;
 
     }
+
+    table, td, th {
+        border : 1px solid lightgrey;
+        border-collapse : collapse;
+    }
 </style>
 
 {% load template_list %}
@@ -25,15 +30,16 @@
         </tr>
     </thead>
     <tbody>
+        <font color="black" size=3>
         {% for article in lastest_article_list %}
         <tr>
-            <td>    <font color="black" size=3>{{ article.id }}</font>  </td>
+            <td>    {{ article.id }}  </td>
             <td>     <a href="/app_board/{{ article.id }}"> {{ article.title }}
                         <font color="grey" size=2>[{{ view_cnt_list|return_item:forloop.counter0 }}]</font>
                     </a>
             </td>
-            <td>    <font color="black" size=3>{{ article.author }}</font> </td>
-            <td>    <font color="black" size=3>{{ article.create_dt|date:'Y-m-d H:i' }} </p></font> </td>
+            <td>    {{ article.author }} </td>
+            <td>    {{ article.create_dt|date:'Y-m-d H:i' }} </td>
         </tr>
         {% endfor %}
     </tbody>
