@@ -17,14 +17,11 @@ def read_article(request:WSGIRequest, article_id:int):
 
 
     try: # 조회수 중복집계 방지
-        print(article)
-        print(ip)
         ViewCheck.objects.get(
             article=article,
             author=ip,
         )
     except ViewCheck.DoesNotExist:
-        print("없어서 만들려구")
         vc = ViewCheck(
             article=article,
             author=ip,
@@ -68,10 +65,13 @@ def write_article(request:WSGIRequest):
             return render(request, 'app_board/write_article.html', context)
 
 def write_comment(request:WSGIRequest, article_id:int):
+    ip = get_client_ip(request)
+
     if request.method == 'POST':
         comment = Comment(
             article_id=article_id,
             contents=request.POST['comment'],
+            author=ip,
         )
         comment.save()
     return redirect('/app_board/%s/' % (article_id))

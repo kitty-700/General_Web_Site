@@ -33,7 +33,7 @@
     <font color="grey"> 댓글 </font>
     <ul>
         {% for comment in comments %}
-        <li> {{ comment.contents }} </li>
+        <li> {{ comment.author }} >> {{ comment.contents }} </li>
         {% endfor %}
     </ul>
 {% else %}
