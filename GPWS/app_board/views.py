@@ -16,7 +16,6 @@ def index(request:WSGIRequest):
     view_cnt_list : List[int] = []
     for a in lastest_article_list:
         view_cnt_list.append( Comment.objects.filter(article=a).count() )
-    print(view_cnt_list)
 
     context = { 'lastest_article_list' : lastest_article_list, 'view_cnt_list' : view_cnt_list }
     return render(request, 'app_board/index.html', context)
