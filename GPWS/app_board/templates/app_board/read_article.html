@@ -2,23 +2,36 @@
 
 {% block contents %}
 
-
+{% with blocked_msg='(검열됨)' %}
 <hr>
-<p> 글 제목 : {{ article.title }} </p>
+<p> 글 제목 : {% if article.is_blocked == True %}{{ blocked_msg }}{% else %}{{ article.title }}{% endif %} </p>
 <p> 생성시각 : {{ article.create_dt|date:'Y-m-d H:i' }} </p>
 <p> 작성자 : {{ article.author }} </p>
 <p> 조회수 : {{ article.view_cnt }} </p>
-
 <hr>
+글 내용 :
+{% if article.is_blocked == True %}
+    {{ blocked_msg }}
+{% else %}
 {% autoescape off %}
-{{ article.contents }}
+    {{ article.contents }}
 {% endautoescape %}
-
+{% endif %}
 <hr>
+{% endwith %}
 
 <!-- 작성자 본인이면 수정 버튼 활성화 -->
 {% if ip == article.author %}
 <a href="{% url 'app_board:update_article' article.id %}"><button>수정</button></a>
+{% endif %}
+
+<!-- 관리자면 검열 버튼 활성화 --><!-- 임시로 루프백 ip로 설정 -->
+{% if ip in admin_ip %}
+    {% if article.is_blocked == False %}
+        <a href="{% url 'app_board:block_article' article.id 1 %}"><button>검열</button></a>
+    {% else %}
+        <a href="{% url 'app_board:block_article' article.id 0 %}"><button>검열해제</button></a>
+    {% endif %}
 {% endif %}
 
 <form action="{% url 'app_board:write_comment' article.id %}" method="POST">

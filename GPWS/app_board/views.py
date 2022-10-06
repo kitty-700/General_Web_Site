@@ -4,6 +4,10 @@ from django.shortcuts import *
 from .ArticleEditForm import ArticleEditForm
 from .models import *
 
+admin_ip = [
+    '127.0.0.1',
+] # IP 기반 인증은 보안상 취약하니 나중에 User 추가한다면 이거 써서 하는 부분 수정해야할듯
+
 # Create your views here.
 def index(request:WSGIRequest):
     lastest_article_list = Article.objects.all().order_by('-create_dt')[:10]
@@ -11,10 +15,8 @@ def index(request:WSGIRequest):
     return render(request, 'app_board/index.html', context)
 
 def read_article(request:WSGIRequest, article_id:int):
+    ip      = get_client_ip(request)
     article = get_object_or_404(Article, pk=article_id)
-
-    ip = get_client_ip(request)
-
 
     try: # 조회수 중복집계 방지
         ViewCheck.objects.get(
@@ -30,12 +32,11 @@ def read_article(request:WSGIRequest, article_id:int):
         article.view_cnt += 1
         article.save()
 
-
     try:
         comments = get_list_or_404(Comment, article=article_id)
     except:
         comments = []
-    context = { 'article' : article, 'comments' : comments, 'ip': get_client_ip(request) }
+    context = { 'article' : article, 'comments' : comments, 'ip': get_client_ip(request), 'admin_ip' : admin_ip }
     return render(request, 'app_board/read_article.html', context)
 
 def write_article(request:WSGIRequest):
@@ -63,6 +64,18 @@ def write_article(request:WSGIRequest):
                 for val in write_form.errors.values():
                     context['error'] = val
             return render(request, 'app_board/write_article.html', context)
+
+def block_article(request:WSGIRequest, article_id:int, block_tp:int):
+    ip = get_client_ip(request)
+
+    if ip != admin_ip:
+        return index(request)
+
+    article = get_object_or_404(Article, pk=article_id)
+    article.is_blocked = False if block_tp == 0 else True
+    article.save()
+
+    return redirect('/app_board/%s/' % (article_id))
 
 def write_comment(request:WSGIRequest, article_id:int):
     ip = get_client_ip(request)
