@@ -1,11 +1,28 @@
 {% extends "base.html" %}
 
 {% block contents %}
+<style>
+    a {
+      text-decoration: none;
+    }
+    li {
+        line-height: 1.5em;
+
+    }
+</style>
+
+{% load template_list %}
 {% if lastest_article_list %}
-    <font color="red"> THIS IS ARTICLE PAGE </font>
+    <font color="black"> THIS IS ARTICLE PAGE </font>
     <ul>
+
         {% for article in lastest_article_list %}
-        <li><a href="/app_board/{{ article.id }}"> : {{ article.title }} </a></li>
+        <li>
+            <font color="grey" size=2>{{ article.id }}</font>
+            <a href="/app_board/{{ article.id }}"> {{ article.title }}
+                <font color="grey" size=2>[{{ view_cnt_list|return_item:forloop.counter0 }}]</font>
+            </a>
+        </li>
         {% endfor %}
     </ul>
 {% else %}

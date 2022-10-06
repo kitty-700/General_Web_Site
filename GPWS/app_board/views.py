@@ -4,14 +4,21 @@ from django.shortcuts import *
 from .ArticleEditForm import ArticleEditForm
 from .models import *
 
+from typing import List
+
 admin_ip = [
     '127.0.0.1',
 ] # IP 기반 인증은 보안상 취약하니 나중에 User 추가한다면 이거 써서 하는 부분 수정해야할듯
 
 # Create your views here.
 def index(request:WSGIRequest):
-    lastest_article_list = Article.objects.all().order_by('-create_dt')[:1000]
-    context = { 'lastest_article_list' : lastest_article_list }
+    lastest_article_list : List[Article] = Article.objects.all().order_by('-create_dt')[:1000]
+    view_cnt_list : List[int] = []
+    for a in lastest_article_list:
+        view_cnt_list.append( Comment.objects.filter(article=a).count() )
+    print(view_cnt_list)
+
+    context = { 'lastest_article_list' : lastest_article_list, 'view_cnt_list' : view_cnt_list }
     return render(request, 'app_board/index.html', context)
 
 def read_article(request:WSGIRequest, article_id:int):
