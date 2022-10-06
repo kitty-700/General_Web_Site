@@ -124,8 +124,16 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 import os
 PROJECT_ROOT  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# STATIC_URL - static 폴더의 최상위 URL 경로
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+
+# STATIC_ROOT - python manage.py collectstatic 명령어 치면 STATIC_ROOT 에 static 파일들이 쭉 만들어짐
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+
+# STATICFILES_DIRS - 실제로 운영 상에서 참조하는 파일은 여기 (STATIC_ROOT 에 쌓인 내용을 여기에 Copy & Paste)
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')

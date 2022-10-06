@@ -13,5 +13,8 @@ urlpatterns = [
 from  django.conf import settings
 from django.conf.urls.static import static
 
+print("STATIC_ROOT..%s" % settings.STATIC_ROOT)
+print("STATICFILES_DIRS..%s" % settings.STATICFILES_DIRS)
+print("BASE_DIR..%s" % settings.BASE_DIR)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
