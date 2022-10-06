@@ -89,6 +89,18 @@ def write_comment(request:WSGIRequest, article_id:int):
         comment.save()
     return redirect('/app_board/%s/' % (article_id))
 
+def delete_comment(request:WSGIRequest, article_id:int, comment_id:int):
+    ip = get_client_ip(request)
+
+    comment = get_object_or_404(Comment, pk=comment_id)
+
+    if comment.author != ip:
+        return redirect('/app_board/')
+
+    comment.delete()
+
+    return redirect('/app_board/%s/' % (article_id))
+
 def update_article(request:WSGIRequest, article_id:int):
     context = {}
     ip = get_client_ip(request)

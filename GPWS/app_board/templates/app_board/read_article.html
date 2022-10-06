@@ -33,7 +33,7 @@
         <a href="{% url 'app_board:block_article' article.id 0 %}"><button>검열해제</button></a>
     {% endif %}
 {% endif %}
-
+<hr>
 <form action="{% url 'app_board:write_comment' article.id %}" method="POST">
 
     {% csrf_token %}
@@ -41,12 +41,14 @@
 
     <button type="submit">댓글 입력</button>
 </form>
-
+<hr>
 {% if comments %}
     <font color="grey"> 댓글 </font>
     <ul>
         {% for comment in comments %}
-        <li> {{ comment.author }} >> {{ comment.contents }} </li>
+        <li> {{ comment.author }} >> {{ comment.contents }}
+            {% if ip == comment.author %}<a href="{% url 'app_board:delete_comment' article.id comment.id %}"><button>삭제</button></a>{% endif %}
+        </li>
         {% endfor %}
     </ul>
 {% else %}
