@@ -8,6 +8,7 @@ class ArticleEditForm(forms.ModelForm):
     
     contents = forms.CharField(
         label='글 내용',
+        widget=forms.Textarea(attrs={'name':'body', 'rows':30, 'cols':50})
     )
 
     field_order = [

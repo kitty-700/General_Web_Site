@@ -2,13 +2,15 @@
 
 {% block contents %}
 
-<div>게시판 글 수정 중 . . . </div>
+<div>게시판 글 <font color="#FF00FF">수정</font> 중 . . . </div>
+<br>
 <form action="" method="POST">
     {% csrf_token %}
 
     {% for form in forms %}
     <div>
         <label for="{{ form.id_for_label }}">{{ form.label }}</label>
+        <br>
         {{ form }}
     </div>
     {% endfor %}

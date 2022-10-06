@@ -10,11 +10,12 @@
 <p> 조회수 : {{ article.view_cnt }} </p>
 <hr>
 글 내용 :
+<br>
 {% if article.is_blocked == True %}
     {{ blocked_msg }}
 {% else %}
 {% autoescape off %}
-    {{ article.contents }}
+    {{ article.contents|linebreaksbr  }}
 {% endautoescape %}
 {% endif %}
 <hr>
