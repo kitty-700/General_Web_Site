@@ -4,19 +4,32 @@
 
 {% with blocked_msg='(검열됨)' %}
 <hr>
-<p> 글 제목 : {% if article.is_blocked == True %}{{ blocked_msg }}{% else %}{{ article.title }}{% endif %} </p>
+<p> 글 제목 :
+    {% if ip == article.author %}
+        {{ article.title }}
+    {% else %}
+        {% if article.is_blocked == True %}{{ blocked_msg }}{% else %}{{ article.title }}{% endif %}
+    {% endif %}
+</p>
 <p> 생성시각 : {{ article.create_dt|date:'Y-m-d H:i' }} </p>
 <p> 작성자 : {{ article.author }} </p>
 <p> 조회수 : {{ article.view_cnt }} </p>
+<font color="red"> {% if article.is_blocked == True %}{{ blocked_msg }}{% endif %}</font>
 <hr>
 글 내용 :
 <br>
-{% if article.is_blocked == True %}
-    {{ blocked_msg }}
+{% if ip == article.author %}
+    {% autoescape off %}
+        {{ article.contents|linebreaksbr }}
+    {% endautoescape %}
 {% else %}
-{% autoescape off %}
-    {{ article.contents|linebreaksbr  }}
-{% endautoescape %}
+    {% if article.is_blocked == True %}
+        {{ blocked_msg }}
+    {% else %}
+        {% autoescape off %}
+            {{ article.contents|linebreaksbr  }}
+        {% endautoescape %}
+    {% endif %}
 {% endif %}
 <hr>
 {% endwith %}

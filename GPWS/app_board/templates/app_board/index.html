@@ -24,7 +24,7 @@
     <thead>
         <tr>
             <th>번호</th>
-            <th>제목</th>
+            <th>제목</th>.
             <th>글쓴이</th>
             <th>작성시각</th>
         </tr>
@@ -34,7 +34,7 @@
         {% for article in lastest_article_list %}
         <tr>
             <td>    {{ article.id }}  </td>
-            <td>     <a href="/app_board/{{ article.id }}"> {{ article.title }}
+            <td>     <a href="/app_board/{{ article.id }}"> {% if article.is_blocked == True %}(검열됨){% else %}{{ article.title }}{% endif %}
                         <font color="grey" size=2>[{{ view_cnt_list|return_item:forloop.counter0 }}]</font>
                     </a>
             </td>
