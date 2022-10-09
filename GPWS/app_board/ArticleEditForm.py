@@ -8,8 +8,7 @@ class ArticleEditForm(forms.ModelForm):
     
     contents = forms.CharField(
         label='글 내용',
-        required=False, # WYSIWYG 사용 시 True 로 세팅되어있으면 An invalid form control with name='contents' is not focusable 오류 발생
-        widget=forms.Textarea()
+        widget=forms.Textarea(attrs={'name':'body', 'rows':30, 'cols':50})
     )
 
     field_order = [
@@ -25,6 +24,7 @@ class ArticleEditForm(forms.ModelForm):
         ]
 
     def clean(self): # override 된 메소드. 값이 비어있는지를 체크한다.
+        print("clean called")
         cleaned_data = super().clean()
 
         title = cleaned_data.get('title', '')
