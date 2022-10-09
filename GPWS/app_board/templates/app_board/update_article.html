@@ -16,9 +16,21 @@
     {% endfor %}
 
     {% if error %}
-    {{ error }}
+        {{ error }}
     {% endif %}
     <button type="submit">수정</button>
 </form>
 
+<script>
+    ClassicEditor
+    .create( document.querySelector('#id_contents'), {
+    // 플러그인 제거 참조 > https://ckeditor.com/docs/ckeditor5/latest/installation/getting-started/configuration.html
+        removePlugins: [ 'MediaEmbed' ], // else ['CKFinderUploadAdapter', 'CKFinder', 'EasyImage', 'Image', 'ImageCaption', 'ImageStyle', 'ImageToolbar', 'ImageUpload', 'MediaEmbed']
+        language: "ko"
+    } )
+    .catch(error => {
+      console.error(error);
+    })
+    ;
+</script>
 {% endblock %}
