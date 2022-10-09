@@ -18,6 +18,9 @@
 <hr>
 글 내용 :
 <br>
+
+<!-- 차단된 게시글 본인 확인 가능하도록 수정  -->
+<div id="editor">
 {% if ip == article.author %}
     {% autoescape off %}
         {{ article.contents|linebreaksbr }}
@@ -31,6 +34,8 @@
         {% endautoescape %}
     {% endif %}
 {% endif %}
+</div>
+
 <hr>
 {% endwith %}
 
@@ -68,5 +73,23 @@
 {% else %}
     <p>No Reply there</p>
 {% endif %}
+
+<script>
+
+// read_only 옵션 참조 > https://ckeditor.com/docs/ckeditor5/latest/api/module_core_editor_editor-Editor.html#function-enableReadOnlyMode
+
+	ClassicEditor
+		.create( document.querySelector( '#editor' ), {
+		        toolbar: [  ],
+		} )
+		.then( editor => {
+		    editor.enableReadOnlyMode( '#editor' );
+
+			window.editor = editor;
+		} )
+		.catch( error => {
+			console.error( 'There was a problem initializing the reader.', error );
+		} );
+</script>
 
 {% endblock %}
