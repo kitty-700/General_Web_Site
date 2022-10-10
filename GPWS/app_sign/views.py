@@ -11,7 +11,11 @@ def sign_up(request):
         # password와 confirm에 입력된 값이 같다면
         if request.POST['password'] == request.POST['confirm']:
             # user 객체를 새로 생성
-            user = User.objects.create_user(username=request.POST['username'], password=request.POST['password'])
+            try:
+                user = User.objects.create_user(username=request.POST['username'], password=request.POST['password'])
+            except:
+                context = {'username':request.POST['username'], 'password':"", 'error': 'username already exist 합니다.'}
+                return render(request, 'app_sign/sign_up.html', context=context)
             # 로그인 한다
             auth.login(request, user)
             return redirect('/')
@@ -36,8 +40,9 @@ def login(request):
             return redirect('/')
         # 존재하지 않는다면
         else:
+            context = {'username':username, 'password':"", 'error': 'username or password is incorrect 입니다.'}
             # 딕셔너리에 에러메세지를 전달하고 다시 login.html 화면으로 돌아간다.
-            return render(request, 'login.html', {'error': 'username or password is incorrect.'})
+            return render(request, 'app_sign/login.html', context=context)
     # login으로 GET 요청이 들어왔을때, 로그인 화면을 띄워준다.
     else:
         return render(request, 'app_sign/login.html')

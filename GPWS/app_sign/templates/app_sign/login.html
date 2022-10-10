@@ -1,10 +1,17 @@
+<div><a href="/">Home 으로.</a></div>
+
 <form method="POST" action="{% url 'app_sign:login' %}">
     {% csrf_token %}
     <p>username</p>
-    <input type="text" name="username">
+    <input type="text" name="username" value="{% if username %}{{ username }}{% endif %}">
     <br>
     <p>password</p>
     <input type="password" name="password">
     <br>
+    <br>
     <input type="submit" value="로그인">
 </form>
+
+{% if error %}
+    {{ error }}
+{% endif %}

@@ -1,7 +1,9 @@
+<div><a href="/">Home 으로.</a></div>
+
 <form method="POST" action="{% url 'app_sign:sign_up' %}">
     {% csrf_token %}
     <p>username</p>
-    <input type="text" name="username">
+    <input type="text" name="username" value="{% if username %}{{ username }}{% endif %}">
     <br>
     <p>password</p>
     <input type="password" name="password">
@@ -9,5 +11,14 @@
     <p>confirm</p>
     <input type="password" name="confirm">
     <br>
+    <br>
+    <input type="checkbox" id="inotabot">
+    <label for="inotabot">나는 봇이 아닙니다</label>
+    <br>
+    <br>
     <input type="submit" value="회원가입">
 </form>
+
+{% if error %}
+    {{ error }}
+{% endif %}
