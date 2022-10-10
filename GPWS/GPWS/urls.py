@@ -1,15 +1,14 @@
 from django.contrib import admin
 from django.urls import path, include
-
 from django.shortcuts import redirect
 
 urlpatterns = [
-    path('', lambda req: redirect('/app_board/')),
-    path('admin/', admin.site.urls),
-    path('app_board/', include('app_board.urls')),
+    path('',            lambda req: redirect('/app_board/')),
+    path('admin/',      admin.site.urls),
+    path('app_board/',  include('app_board.urls')),
+    path('sign/',       include('app_sign.urls')),
 ]
 
-# summernote (게시글 작성 form) 추가
 from  django.conf import settings
 from django.conf.urls.static import static
 

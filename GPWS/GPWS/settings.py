@@ -37,9 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app_board.apps.AppBoardConfig'
 ]
-# INSTALLED_APPS += ('django_summernote', )
+INSTALLED_APPS += (
+    'app_board.apps.AppBoardConfig',
+    'app_sign.apps.AppSignConfig',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -56,7 +58,7 @@ ROOT_URLCONF = 'GPWS.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['app_board/templates/app_board'],
+        'DIRS': ['app_board/templates/app_board', 'app_sign/templates/app_sign'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

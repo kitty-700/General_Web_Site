@@ -16,7 +16,17 @@
 <body>
 <div><a href="/">Home 으로.</a></div>
 <br>
-
+{% if user.is_authenticated %}
+    <p>{{ user.username }}</p>
+    <a href="javascript:{document.getElementById('logout').submit()}">로그아웃</a>
+    <form id="logout" method="POST" action="{% url 'app_sign:logout' %}">
+        {% csrf_token %} <input type="hidden" />
+    </form>
+{% else %}
+    <a href="{% url 'app_sign:sign_up' %}">회원가입</a>
+    <a href="{% url 'app_sign:login' %}">로그인</a>
+{% endif %}
+<br>
 {% block contents %}
 None Yet,,
 {% endblock %}
