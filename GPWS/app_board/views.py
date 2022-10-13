@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import *
 
@@ -5,10 +6,6 @@ from .ArticleEditForm import ArticleEditForm
 from .models import *
 
 from typing import List
-
-admin_ip = [
-    '127.0.0.1',
-] # IP 기반 인증은 보안상 취약하니 나중에 User 추가한다면 이거 써서 하는 부분 수정해야할듯
 
 # Create your views here.
 def index(request:WSGIRequest):
@@ -27,12 +24,12 @@ def read_article(request:WSGIRequest, article_id:int):
     try: # 조회수 중복집계 방지
         ViewCheck.objects.get(
             article=article,
-            author=ip,
+            work_ip=ip,
         )
     except ViewCheck.DoesNotExist:
         vc = ViewCheck(
             article=article,
-            author=ip,
+            work_ip=ip,
         )
         vc.save()
         article.view_cnt += 1
@@ -42,12 +39,13 @@ def read_article(request:WSGIRequest, article_id:int):
         comments = get_list_or_404(Comment, article=article_id)
     except:
         comments = []
-    context = { 'article' : article, 'comments' : comments, 'ip': get_client_ip(request), 'admin_ip' : admin_ip }
+    context = { 'article' : article, 'comments' : comments }
     return render(request, 'app_board/read_article.html', context)
 
 def write_article(request:WSGIRequest):
     context = {}
-    ip = get_client_ip(request)
+    # 로그인 케이스 : isinstance(request.user, User) == True
+    # 비 로그인 케이스 : isinstance(request.user, AnonymousUser) == True
 
     if request.method == 'GET': # 1차로는 GET 으로 Form을 얻고
         write_form = ArticleEditForm()
@@ -56,11 +54,11 @@ def write_article(request:WSGIRequest):
     elif request.method == 'POST': # 2차로는 받아온 Form에 내용을 넣어 입력 처리
         write_form = ArticleEditForm(request.POST)
         if write_form.is_valid():
-            author = ip # 추후 User.objects.get(user_id=login_session) 를 통해 User nickname 식별
             article = Article(
                 title=      write_form.title,
                 contents=  write_form.contents,
-                author=     author,
+                author=request.user if isinstance(request.user, User) else None,
+                work_ip=get_client_ip(request)
             )
             article.save()
             return redirect('/app_board')
@@ -72,9 +70,7 @@ def write_article(request:WSGIRequest):
             return render(request, 'app_board/write_article.html', context)
 
 def block_article(request:WSGIRequest, article_id:int, block_tp:int):
-    ip = get_client_ip(request)
-
-    if ip not in admin_ip:
+    if not request.user.is_superuser:
         return index(request)
 
     article = get_object_or_404(Article, pk=article_id)
@@ -84,23 +80,22 @@ def block_article(request:WSGIRequest, article_id:int, block_tp:int):
     return redirect('/app_board/%s/' % (article_id))
 
 def write_comment(request:WSGIRequest, article_id:int):
-    ip = get_client_ip(request)
-
     if request.method == 'POST':
         comment = Comment(
             article_id=article_id,
             contents=request.POST['comment'],
-            author=ip,
+            author=request.user if isinstance(request.user, User) else None,
+            work_ip=get_client_ip(request)
         )
         comment.save()
     return redirect('/app_board/%s/' % (article_id))
 
 def delete_comment(request:WSGIRequest, article_id:int, comment_id:int):
-    ip = get_client_ip(request)
-
     comment = get_object_or_404(Comment, pk=comment_id)
 
-    if comment.author != ip:
+    # 권한
+    if is_comment_owner(request, get_client_ip(request), comment) == False:
+        print("부적절한 접근")
         return redirect('/app_board/')
 
     comment.delete()
@@ -109,11 +104,9 @@ def delete_comment(request:WSGIRequest, article_id:int, comment_id:int):
 
 def update_article(request:WSGIRequest, article_id:int):
     context = {}
-    ip = get_client_ip(request)
-
     article = get_object_or_404(Article, pk=article_id)
 
-    if article.author != ip:
+    if is_article_owner(request, get_client_ip(request), article) == False:
         return redirect('/app_board/')
 
     if request.method == 'GET': # 1차로는 GET 으로 Form을 얻고
@@ -142,3 +135,25 @@ def get_client_ip(request:WSGIRequest):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+def is_comment_owner(request:WSGIRequest, ip, comment: Comment):
+    # 작성 계정이 존재한다면 계정을 통해 검사
+    if comment.author is not None:
+        if comment.author != request.user:
+            return False
+    # 작성 계정이 따로 없다면 ip를 통해 검사
+    else:
+        if comment.work_ip != ip:
+            return False
+    return True
+
+def is_article_owner(request:WSGIRequest, ip, article: Article):
+    # 작성 계정이 존재한다면 계정을 통해 검사
+    if article.author is not None:
+        if article.author != request.user:
+            return False
+    # 작성 계정이 따로 없다면 ip를 통해 검사
+    else:
+        if article.work_ip != ip:
+            return False
+    return True

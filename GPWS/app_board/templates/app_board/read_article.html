@@ -3,16 +3,23 @@
 {% block contents %}
 
 {% with blocked_msg='(검열됨)' %}
+
+{% comment %}
+    {% if user.is_authenticated and article.author == user %} 를 통해 해당 글의 작성자인지 검사
+{% endcomment %}
+
 <hr>
+{# 작성자일 때는 검열여부과 관계없이 표시 #}
 <p> 글 제목 :
-    {% if ip == article.author %}
+    {% if user.is_authenticated and article.author == user %}
         {{ article.title }}
     {% else %}
         {% if article.is_blocked == True %}{{ blocked_msg }}{% else %}{{ article.title }}{% endif %}
     {% endif %}
 </p>
 <p> 생성시각 : {{ article.create_dt|date:'Y-m-d H:i' }} </p>
-<p> 작성자 : {{ article.author }} </p>
+<p> 작성자 : {{ article.author.username }} </p>
+<p> 작성IP : {{ article.work_ip }} </p>
 <p> 조회수 : {{ article.view_cnt }} </p>
 <font color="red"> {% if article.is_blocked == True %}{{ blocked_msg }}{% endif %}</font>
 <hr>
@@ -21,7 +28,7 @@
 
 <!-- 차단된 게시글 본인 확인 가능하도록 수정  -->
 <div id="editor">
-{% if ip == article.author %}
+{% if user.is_authenticated and article.author == user %}
     {% autoescape off %}
         {{ article.contents|linebreaksbr }}
     {% endautoescape %}
@@ -40,12 +47,12 @@
 {% endwith %}
 
 <!-- 작성자 본인이면 수정 버튼 활성화 -->
-{% if ip == article.author %}
-<a href="{% url 'app_board:update_article' article.id %}"><button>수정</button></a>
+{% if user.is_authenticated and article.author == user %}
+    <a href="{% url 'app_board:update_article' article.id %}"><button>수정</button></a>
 {% endif %}
 
 <!-- 관리자면 검열 버튼 활성화 --><!-- 임시로 루프백 ip로 설정 -->
-{% if ip in admin_ip %}
+{% if user.is_authenticated and user.is_staff %}
     {% if article.is_blocked == False %}
         <a href="{% url 'app_board:block_article' article.id 1 %}"><button>검열</button></a>
     {% else %}
@@ -65,8 +72,8 @@
     <font color="grey"> 댓글 </font>
     <ul>
         {% for comment in comments %}
-        <li> {{ comment.author }} >> {{ comment.contents }}
-            {% if ip == comment.author %}<a href="{% url 'app_board:delete_comment' article.id comment.id %}"><button>삭제</button></a>{% endif %}
+        <li> {{ comment.author.username }} >> {{ comment.contents }}
+            {% if user.is_authenticated and comment.author == user %}<a href="{% url 'app_board:delete_comment' article.id comment.id %}"><button>삭제</button></a>{% endif %}
         </li>
         {% endfor %}
     </ul>
