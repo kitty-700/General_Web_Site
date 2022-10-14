@@ -18,7 +18,7 @@
     {% endif %}
 </p>
 <p> 생성시각 : {{ article.create_dt|date:'Y-m-d H:i' }} </p>
-<p> 작성자 : {{ article.author.username }} </p>
+<p> 작성자 : {% if article.author is not None %}{{ article.author.username }}{% else %}<i>(미등록 사용자)</i>{% endif %} </p>
 <p> 작성IP : {{ article.work_ip }} </p>
 <p> 조회수 : {{ article.view_cnt }} </p>
 <font color="red"> {% if article.is_blocked == True %}{{ blocked_msg }}{% endif %}</font>
@@ -72,7 +72,12 @@
     <font color="grey"> 댓글 </font>
     <ul>
         {% for comment in comments %}
-        <li> {{ comment.author.username }} >> {{ comment.contents }}
+        <li>{% if comment.author is not None %}
+                [{{ comment.author.username }}]
+            {% else %}
+                <i>(미등록 사용자)</i>
+             {% endif %}
+            <font color="grey">{{ comment.work_ip }} </font> >> {{ comment.contents }}
             {% if user.is_authenticated and comment.author == user %}<a href="{% url 'app_board:delete_comment' article.id comment.id %}"><button>삭제</button></a>{% endif %}
         </li>
         {% endfor %}
