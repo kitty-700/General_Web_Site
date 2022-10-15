@@ -72,7 +72,7 @@ def write_article(request:WSGIRequest):
 
 def block_article(request:WSGIRequest, article_id:int, block_tp:int):
     if not request.user.is_superuser:
-        return index(request)
+        return redirect('/app_board/')
 
     article = get_object_or_404(Article, pk=article_id)
     article.is_blocked = False if block_tp == 0 else True
