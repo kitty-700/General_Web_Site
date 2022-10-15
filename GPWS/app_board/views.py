@@ -1,21 +1,21 @@
 from django.contrib.auth.models import AnonymousUser
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import *
-
 from .ArticleEditForm import ArticleEditForm
 from .models import *
-
 from typing import List
+from django.views.generic import View
 
-# Create your views here.
-def index(request:WSGIRequest):
-    lastest_article_list : List[Article] = Article.objects.all().order_by('-create_dt')[:1000]
-    view_cnt_list : List[int] = []
-    for a in lastest_article_list:
-        view_cnt_list.append( Comment.objects.filter(article=a).count() )
+class IndexView(View):
+    # 내부적으로 dispatch()을 통해 HTTP Method 를 식별
+    def get(self, request:WSGIRequest): # HTTP Method 가 GET일 때의 동작을 오버라이딩
+        lastest_article_list: List[Article] = Article.objects.all().order_by('-create_dt')[:1000]
+        view_cnt_list: List[int] = []
+        for a in lastest_article_list:
+            view_cnt_list.append(Comment.objects.filter(article=a).count())
 
-    context = { 'lastest_article_list' : lastest_article_list, 'view_cnt_list' : view_cnt_list }
-    return render(request, 'app_board/index.html', context)
+        context = {'lastest_article_list': lastest_article_list, 'view_cnt_list': view_cnt_list}
+        return render(request, 'app_board/index.html', context)
 
 def read_article(request:WSGIRequest, article_id:int):
     ip      = get_client_ip(request)
