@@ -18,9 +18,6 @@ class IndexView(View):
         context = {'lastest_article_list': lastest_article_list, 'view_cnt_list': view_cnt_list}
         return render(request, 'app_board/index.html', context)
 
-class NoticeView(TemplateView):
-    template_name = "notice.html"
-
 def read_article(request:WSGIRequest, article_id:int):
     ip      = get_client_ip(request)
     article = get_object_or_404(Article, pk=article_id)
