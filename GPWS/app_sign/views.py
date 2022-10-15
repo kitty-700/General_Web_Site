@@ -18,7 +18,7 @@ def sign_up(request):
                 return render(request, 'app_sign/sign_up.html', context=context)
             # 로그인 한다
             auth.login(request, user)
-            return redirect('/')
+            return redirect('/app_board/notice')
     # signup으로 GET 요청이 왔을 때, 회원가입 화면을 띄워준다.
     return render(request, 'app_sign/sign_up.html')
 

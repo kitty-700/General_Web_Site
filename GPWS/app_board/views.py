@@ -4,10 +4,11 @@ from django.shortcuts import *
 from .ArticleEditForm import ArticleEditForm
 from .models import *
 from typing import List
-from django.views.generic import View
+from django.views.generic import View, TemplateView
+
 
 class IndexView(View):
-    # 내부적으로 dispatch()을 통해 HTTP Method 를 식별
+    # 내부적으로 dispatch()을 통해 HTTP Method 를 식별하여 get(), post(),... 등을 호출
     def get(self, request:WSGIRequest): # HTTP Method 가 GET일 때의 동작을 오버라이딩
         lastest_article_list: List[Article] = Article.objects.all().order_by('-create_dt')[:1000]
         view_cnt_list: List[int] = []
@@ -16,6 +17,9 @@ class IndexView(View):
 
         context = {'lastest_article_list': lastest_article_list, 'view_cnt_list': view_cnt_list}
         return render(request, 'app_board/index.html', context)
+
+class NoticeView(TemplateView):
+    template_name = "notice.html"
 
 def read_article(request:WSGIRequest, article_id:int):
     ip      = get_client_ip(request)
