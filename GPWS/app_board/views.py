@@ -4,7 +4,7 @@ from django.shortcuts import *
 from .ArticleEditForm import ArticleEditForm
 from .models import *
 from typing import List
-from django.views.generic import View, TemplateView
+from django.views.generic import View, TemplateView, FormView
 
 
 class IndexView(View):
@@ -43,16 +43,18 @@ def read_article(request:WSGIRequest, article_id:int):
     context = { 'article' : article, 'comments' : comments }
     return render(request, 'app_board/read_article.html', context)
 
-def write_article(request:WSGIRequest):
+class WriteArticle(View):
+    form_class = ArticleEditForm
+    template_name = 'write_article.html'
+    success_url = '/'
     context = {}
-    # 로그인 케이스 : isinstance(request.user, User) == True
-    # 비 로그인 케이스 : isinstance(request.user, AnonymousUser) == True
 
-    if request.method == 'GET': # 1차로는 GET 으로 Form을 얻고
+    def get(self, request, *args, **kwargs):
         write_form = ArticleEditForm()
-        context['forms'] = write_form
-        return render(request, 'app_board/write_article.html', context)
-    elif request.method == 'POST': # 2차로는 받아온 Form에 내용을 넣어 입력 처리
+        self.context['forms'] = write_form
+        return render(request, 'app_board/write_article.html', self.context)
+
+    def post(self, request, *args, **kwargs):
         write_form = ArticleEditForm(request.POST)
         if write_form.is_valid():
             article = Article(
@@ -64,11 +66,46 @@ def write_article(request:WSGIRequest):
             article.save()
             return redirect('/app_board')
         else:
-            context['forms'] = write_form
+            self.context['forms'] = write_form
             if write_form.errors:
                 for val in write_form.errors.values():
-                    context['error'] = val
-            return render(request, 'app_board/write_article.html', context)
+                    self.context['error'] = val
+            return render(request, 'app_board/write_article.html', self.context)
+
+class UpdateArticle(View):
+    form_class = ArticleEditForm
+    template_name = 'update_article.html'
+    success_url = '/'
+    context = {}
+
+    def get(self, request, *args, **kwargs):
+        article = get_object_or_404(Article, pk=kwargs['article_id'])
+        if is_article_owner(request, get_client_ip(request), article) == False:
+            return redirect('/app_board/')
+
+        write_form = ArticleEditForm(instance=article)
+        self.context['forms'] = write_form
+        return render(request, 'app_board/update_article.html', self.context)
+
+    def post(self, request, *args, **kwargs):
+        article_id = kwargs['article_id']
+        article = get_object_or_404(Article, pk=article_id)
+        if is_article_owner(request, get_client_ip(request), article) == False:
+            return redirect('/app_board/')
+
+        write_form = ArticleEditForm(request.POST)
+        if write_form.is_valid():
+            article.title = write_form.title
+            article.contents = write_form.contents
+            article.modify_dt = datetime.now()
+            article.save()
+            return read_article(request=request, article_id=article_id)
+        else:
+            self.context['forms'] = write_form
+            if write_form.errors:
+                for val in write_form.errors.values():
+                    self.context['error'] = val
+            return render(request, 'app_board/write_article.html', self.context)
 
 def block_article(request:WSGIRequest, article_id:int, block_tp:int):
     if not request.user.is_superuser:
@@ -102,32 +139,6 @@ def delete_comment(request:WSGIRequest, article_id:int, comment_id:int):
     comment.delete()
 
     return redirect('/app_board/%s/' % (article_id))
-
-def update_article(request:WSGIRequest, article_id:int):
-    context = {}
-    article = get_object_or_404(Article, pk=article_id)
-
-    if is_article_owner(request, get_client_ip(request), article) == False:
-        return redirect('/app_board/')
-
-    if request.method == 'GET': # 1차로는 GET 으로 Form을 얻고
-        write_form = ArticleEditForm(instance=article)
-        context['forms'] = write_form
-        return render(request, 'app_board/update_article.html', context)
-    elif request.method == 'POST': # 2차로는 받아온 Form에 내용을 넣어 입력 처리
-        write_form = ArticleEditForm(request.POST)
-        if write_form.is_valid():
-            article.title = write_form.title
-            article.contents = write_form.contents
-            # article.modify_dt =
-            article.save()
-            return read_article(request=request, article_id=article_id)
-        else:
-            context['forms'] = write_form
-            if write_form.errors:
-                for val in write_form.errors.values():
-                    context['error'] = val
-            return render(request, 'app_board/write_article.html', context)
 
 def get_client_ip(request:WSGIRequest):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
