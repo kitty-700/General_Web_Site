@@ -18,6 +18,9 @@
     {% endif %}
 </p>
 <p> 생성시각 : {{ article.create_dt|date:'Y-m-d H:i' }} </p>
+{% if article.create_dt != article.modify_dt %}
+<p> 수정시각 : {{ article.modify_dt|date:'Y-m-d H:i' }} </p>
+{% endif %}
 <p> 작성자 : {% if article.author is not None %}{{ article.author.username }}{% else %}<i>(미등록 사용자)</i>{% endif %} </p>
 <p> 작성IP : {{ article.work_ip }} </p>
 <p> 조회수 : {{ article.view_cnt }} </p>
