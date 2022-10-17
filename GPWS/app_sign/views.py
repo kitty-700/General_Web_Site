@@ -1,26 +1,39 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import auth
-
+from django.views.generic import View, TemplateView, FormView
 from django.core.handlers.wsgi import WSGIRequest
 
 # 회원 가입
-def sign_up(request):
-    # signup 으로 POST 요청이 왔을 때, 새로운 유저를 만드는 절차를 밟는다.
-    if request.method == 'POST':
-        # password와 confirm에 입력된 값이 같다면
-        if request.POST['password'] == request.POST['confirm']:
-            # user 객체를 새로 생성
-            try:
-                user = User.objects.create_user(username=request.POST['username'], password=request.POST['password'])
-            except:
-                context = {'username':request.POST['username'], 'password':"", 'error': 'username already exist 합니다.'}
-                return render(request, 'app_sign/sign_up.html', context=context)
-            # 로그인 한다
-            auth.login(request, user)
-            return redirect('/app_board/notice')
-    # signup으로 GET 요청이 왔을 때, 회원가입 화면을 띄워준다.
-    return render(request, 'app_sign/sign_up.html')
+class SignUp(View):
+    # 내부적으로 dispatch()을 통해 HTTP Method 를 식별하여 get(), post(),... 등을 호출
+    def get(self, request, *args, **kwargs):
+        return render(request, 'app_sign/sign_up.html')
+
+    def post(self, request, *args, **kwargs):
+        print(request.POST['password'])
+        context = {'username': request.POST['username'], 'password': ''}
+
+        # Fail Case 1. ID 가 유효한지 검사
+        if request.POST['username'].isalnum() == False:
+            context['error'] = 'username은 알파벳 혹은 한글, 숫자로만 가능합니다.'
+            return render(request, 'app_sign/sign_up.html', context=context)
+
+        # Fail Case 2. password와 confirm에 입력된 값이 같다면
+        if request.POST['password'] != request.POST['confirm']:
+            context['error'] = '비밀번호 확인 값이 다릅니다.'
+            return render(request, 'app_sign/sign_up.html', context=context)
+
+        # Fail Case 2. user 객체를 새로 생성
+        try:
+            user = User.objects.create_user(username=request.POST['username'], password=request.POST['password'])
+        except:
+            context['error'] = f'username "{ request.POST["username"] }"는 이미 exist 합니다.'
+            return render(request, 'app_sign/sign_up.html', context=context)
+
+        # 로그인
+        auth.login(request, user)
+        return redirect('/app_board/notice')
 
 # 로그인
 def login(request):
