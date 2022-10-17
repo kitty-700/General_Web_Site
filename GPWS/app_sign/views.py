@@ -11,7 +11,6 @@ class SignUp(View):
         return render(request, 'app_sign/sign_up.html')
 
     def post(self, request, *args, **kwargs):
-        print(request.POST['password'])
         context = {'username': request.POST['username'], 'password': ''}
 
         # Fail Case 1. ID 가 유효한지 검사
