@@ -35,9 +35,12 @@ class SignUp(View):
         return redirect('/app_board/notice')
 
 # 로그인
-def login(request):
-    # login으로 POST 요청이 들어왔을 때, 로그인 절차를 밟는다.
-    if request.method == 'POST':
+
+class Login(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'app_sign/login.html')
+
+    def post(self, request, *args, **kwargs):
         # login.html에서 넘어온 username과 password를 각 변수에 저장한다.
         username = request.POST['username']
         password = request.POST['password']
@@ -55,16 +58,12 @@ def login(request):
             context = {'username':username, 'password':"", 'error': 'username or password is incorrect 입니다.'}
             # 딕셔너리에 에러메세지를 전달하고 다시 login.html 화면으로 돌아간다.
             return render(request, 'app_sign/login.html', context=context)
-    # login으로 GET 요청이 들어왔을때, 로그인 화면을 띄워준다.
-    else:
-        return render(request, 'app_sign/login.html')
 
 # 로그 아웃
-def logout(request):
-    # logout으로 POST 요청이 들어왔을 때, 로그아웃 절차를 밟는다.
-    if request.method == 'POST':
+class Logout(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'app_sign/login.html')
+
+    def post(self, request, *args, **kwargs):
         auth.logout(request)
         return redirect('/')
-
-    # logout으로 GET 요청이 들어왔을 때, 로그인 화면을 띄워준다.
-    return render(request, 'app_sign/login.html')

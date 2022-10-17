@@ -5,7 +5,7 @@ from .views import *
 app_name = 'app_sign'
 
 urlpatterns = [
-    path('sign_up/',    SignUp.as_view(),  name='sign_up'),
-    path('login/',      views.login,    name='login'),
-    path('logout/',     views.logout,   name='logout'),
+    path('sign_up/',    SignUp.as_view(), name='sign_up'),
+    path('login/',      Login.as_view(),  name='login'),
+    path('logout/',     Logout.as_view(), name='logout'),
 ]
