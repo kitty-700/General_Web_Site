@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import auth
@@ -16,6 +17,11 @@ class SignUp(View):
         # Fail Case 1. ID 가 유효한지 검사
         if request.POST['username'].isalnum() == False:
             context['error'] = 'username은 알파벳 혹은 한글, 숫자로만 가능합니다.'
+            return render(request, 'app_sign/sign_up.html', context=context)
+
+        # Fail Case 2. user 변경
+        if request.POST['password'] == '':
+            context['error'] = '비밀번호를 입력해주세요.'
             return render(request, 'app_sign/sign_up.html', context=context)
 
         # Fail Case 2. password와 confirm에 입력된 값이 같다면
@@ -66,4 +72,37 @@ class Logout(View):
 
     def post(self, request, *args, **kwargs):
         auth.logout(request)
+        return redirect('/')
+
+
+# 회원 정보 수정
+class MyPage(View):
+    # 내부적으로 dispatch()을 통해 HTTP Method 를 식별하여 get(), post(),... 등을 호출
+    def get(self, request, *args, **kwargs):
+        return render(request, 'app_sign/my_page.html')
+
+    def post(self, request, *args, **kwargs):
+        context = {'password': ''}
+
+        # Fail Case 1. password와 confirm에 입력된 값이 같다면
+        if request.POST['password'] != request.POST['confirm']:
+            context['error'] = '비밀번호 확인 값이 다릅니다.'
+            return render(request, 'app_sign/my_page.html', context=context)
+
+        # Fail Case 2. password 공백
+        if request.POST['password'] == '':
+            context['error'] = '비밀번호를 입력해주세요.'
+            return render(request, 'app_sign/my_page.html', context=context)
+
+        # Fail Case 3. user 변경
+        try:
+            user = request.user
+            user.set_password(request.POST['password'])
+            user.save()
+        except Exception as ex:
+            context['error'] = f'변경 실패.... { ex }'
+            return render(request, 'app_sign/my_page.html', context=context)
+
+        # 로그인
+        auth.login(request, user)
         return redirect('/')

@@ -1,0 +1,28 @@
+{% extends "app_board/base.html" %}
+
+{% block contents %}
+
+
+<br>
+<br>
+<form method="POST" action="{% url 'app_sign:my_page' %}">
+    {% csrf_token %}
+    <br>
+    {% if user.is_authenticated %}
+        Hello! {{ user.username }}
+    {% endif %}
+    <p>password</p>
+    <input type="password" name="password">
+    <br>
+    <p>confirm</p>
+    <input type="password" name="confirm">
+    <br>
+    <br>
+    <input type="submit" value="변경">
+</form>
+
+{% if error %}
+    {{ error }}
+{% endif %}
+
+{% endblock %}
