@@ -106,6 +106,17 @@ class UpdateArticle(View):
                 for val in write_form.errors.values():
                     self.context['error'] = val
             return render(request, 'app_board/write_article.html', self.context)
+def delete_article(request:WSGIRequest, article_id:int):
+    article = get_object_or_404(Article, pk=article_id)
+
+    # 권한
+    if is_article_owner(request, get_client_ip(request), article) == False:
+        return redirect('/app_board/')
+
+    article.delete()
+
+    return redirect('/app_board/')
+
 
 def block_article(request:WSGIRequest, article_id:int, block_tp:int):
     if not request.user.is_superuser:
@@ -133,7 +144,6 @@ def delete_comment(request:WSGIRequest, article_id:int, comment_id:int):
 
     # 권한
     if is_comment_owner(request, get_client_ip(request), comment) == False:
-        print("부적절한 접근")
         return redirect('/app_board/')
 
     comment.delete()
