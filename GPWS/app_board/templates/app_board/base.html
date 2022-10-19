@@ -14,19 +14,19 @@
     </style>
 </head>
 <body>
-<div><a href="/">Home 으로.</a></div>
-<br>
-{% if user.is_authenticated %}
-    <p>{{ user.username }}</p>
-    <a href="javascript:{document.getElementById('logout').submit()}">로그아웃</a>
-    <form id="logout" method="POST" action="{% url 'app_sign:logout' %}">
-        {% csrf_token %} <input type="hidden" />
-    </form>
-{% else %}
-    <a href="{% url 'app_sign:sign_up' %}">회원가입</a>
-    <a href="{% url 'app_sign:login' %}">로그인</a>
-{% endif %}
-<br>
+<div style="width:200px; display:inline-block"><a href="/">Home 으로.</a></div>
+<div style="width:calc(100% - 220px); display:inline-block; text-align:right">
+    {% if user.is_authenticated %}
+        <a style="margin-right:20px;">{{ user.username }}</a>
+        <a href="javascript:{document.getElementById('logout').submit()}">로그아웃</a>
+        <form id="logout" method="POST" action="{% url 'app_sign:logout' %}">
+            {% csrf_token %} <input type="hidden" />
+        </form>
+    {% else %}
+        <a href="{% url 'app_sign:sign_up' %}">회원가입</a>
+        <a href="{% url 'app_sign:login' %}">로그인</a>
+    {% endif %}
+</div>
 {% block contents %}
 None Yet,,
 {% endblock %}
