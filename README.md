@@ -1,4 +1,20 @@
 # Commit 가이드 라인 (v.0.1)
+
+라이브러리 (pip freeze > requirements.txt
+```
+asgiref==3.5.2
+certifi @ file:///C:/b/abs_ac29jvt43w/croot/certifi_1665076682579/work/certifi
+Django==4.1.2
+django-ckeditor==6.5.1
+django-ckeditor-5==0.2.0
+django-js-asset==2.0.0
+install==1.3.5
+Pillow==9.2.0
+sqlparse==0.4.3
+tzdata==2022.4
+wincertstore==0.2
+```
+Commit Tag 가이드
 ```
 [필수] {Type} : {Subject}
 [선택] {Body}
