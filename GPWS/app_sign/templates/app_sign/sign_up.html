@@ -1,4 +1,6 @@
-<div><a href="/">Home 으로.</a></div>
+{% extends "app_board/base.html" %}
+
+{% block contents %}
 
 <form method="POST" action="{% url 'app_sign:sign_up' %}">
     {% csrf_token %}
@@ -22,3 +24,5 @@
 {% if error %}
     {{ error }}
 {% endif %}
+
+{% endblock %}
