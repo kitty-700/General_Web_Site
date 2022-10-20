@@ -130,6 +130,8 @@ def block_article(request:WSGIRequest, article_id:int, block_tp:int):
 
 def write_comment(request:WSGIRequest, article_id:int):
     if request.method == 'POST':
+        if len(request.POST['comment'].strip()) == 0:
+            return redirect('/app_board/%s/' % (article_id))
         comment = Comment(
             article_id=article_id,
             contents=request.POST['comment'],
