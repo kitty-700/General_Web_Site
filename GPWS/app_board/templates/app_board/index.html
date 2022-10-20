@@ -21,24 +21,38 @@
     table th{
         text-align: center;
     }
-    table tr:nth-chile(1), table td:nth-child(1){
-        width:40px;
+    table tr:nth-child(1), table td:nth-child(1){
+        width: 50px;
         text-align: center;
     }
-    table tr:nth-child(4), table td:nth-child(4){
-        width:160px;
-        text-align: center;
+
+    table tr:nth-child(2), table td:nth-child(2){
+        padding-left: 10px;
     }
     table tr:nth-child(3), table td:nth-child(3){
-        width:100px;
+        width: 200px;
+        text-align: left;
+        padding-left: 10px;
+    }
+    table tr:nth-child(4), table td:nth-child(4){
+        width: 160px;
         text-align: center;
+    }
+    table td div{
+        display:inline-block;
+        vertical-align:middle;
+        position:relative;
+        max-width: calc(100% - 28px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 </style>
 
 {% load template_list %}
 {% if lastest_article_list %}
-<div style="margin-top:20px">THIS IS ARTICLE PAGE </div>
-<table>
+
+<table style="margin-top:20px">
     <thead>
         <tr>
             <th>번호</th>
@@ -52,12 +66,15 @@
         {% for article in lastest_article_list %}
         <tr>
             <td>    {{ article.id }}  </td>
-            <td>     <a href="/app_board/{{ article.id }}"> {% if article.is_blocked == True %}(검열됨){% else %}{{ article.title }}{% endif %}
+            <td>
+                <div>
+                    <a href="/app_board/{{ article.id }}"> {% if article.is_blocked == True %}(검열됨){% else %}{{ article.title }}{% endif %}
                         <font color="grey" size=2>[{{ view_cnt_list|return_item:forloop.counter0 }}]</font>
                     </a>
+                </div>
             </td>
-            <td>    {% if article.author is not None %}{{ article.author.username }}{% else %}<i>(미등록 사용자)</i>{% endif %} </td>
-            <td>    {{ article.create_dt|date:'Y-m-d H:i' }} </td>
+            <td><div> {% if article.is_blocked == True %}(검열됨){% else %}{% if article.author is not None %}{{ article.author.username }}{% else %}<font color="grey">Guest</font>{% endif %}{% endif %} </div></td>
+            <td><div> {{ article.create_dt|date:'Y-m-d H:i' }} </div></td>
         </tr>
         {% endfor %}
     </tbody>
@@ -65,6 +82,7 @@
 {% else %}
     <p>No Articles there</p>
 {% endif %}
-<a style="color:#ffffff" href="{% url 'app_board:write_article' %}"><div style="width:120px; height:45px; background-color:#278de3;text-align:center;line-height:45px;float:right">글 작성</div></a>
+<a style="color:#ffffff" href="{% url 'app_board:write_article' %}">
+    <div style="width:90px; height:45px; background-color:#278de3; text-align:center; vertical-align: middle; line-height:45px; float:right">글 작성</div></a>
 
 {% endblock contents %}

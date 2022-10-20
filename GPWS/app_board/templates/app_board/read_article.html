@@ -8,42 +8,113 @@
     {% if user.is_authenticated and article.author == user %} 를 통해 해당 글의 작성자인지 검사
 {% endcomment %}
 
+<style>
+    .title-area{
+        position: relative;
+        border-bottom: 1px solid #e7e7e7;
+    }
+
+    .title{
+        font-weight: 400;
+        font-size: 24px;
+        line-height: 30px;
+        letter-spacing: -.2px;
+        margin: 0px;
+        padding: 10px;
+    }
+
+    .article-info{
+        list-style: none;
+        margin: 0 0 10px 10px;
+        padding:0;
+    }
+
+    .article-info li{
+        margin-right: 8px;
+        position: relative;
+        float: left;
+        font-size: 14px;
+        color: #777;
+    }
+
+    .article-info li:after{
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 8px;
+        border-left: 1px solid #e7e7e7;
+        height: 12px;
+        content: "";
+    }
+
+    .article-info:after, .button-area:after {
+        content: '';
+        display: block;
+        width: 0;
+        height: 0;
+        clear: both;
+    }
+
+    .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused){
+        border: none;
+    }
+
+    .ck-content{
+        height: auto;
+        min-height: 400px;
+    }
+
+    button{
+        width: 90px;
+        height: 30px;
+        background-color: #278de3;
+        text-align: center;
+        line-height: 30px;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        margin-left: 10px;
+    }
+</style>
+
 <hr>
 {# 작성자일 때는 검열여부과 관계없이 표시 #}
-<p> 글 제목 :
-    {% if user.is_authenticated and article.author == user %}
-        {{ article.title }}
-    {% else %}
-        {% if article.is_blocked == True %}{{ blocked_msg }}{% else %}{{ article.title }}{% endif %}
-    {% endif %}
-</p>
-<p> 생성시각 : {{ article.create_dt|date:'Y-m-d H:i' }} </p>
-{% if article.create_dt != article.modify_dt %}
-<p> 수정시각 : {{ article.modify_dt|date:'Y-m-d H:i' }} </p>
-{% endif %}
-<p> 작성자 : {% if article.author is not None %}{{ article.author.username }}{% else %}<i>(미등록 사용자)</i>{% endif %} </p>
-<p> 작성IP : {{ article.work_ip }} </p>
-<p> 조회수 : {{ article.view_cnt }} </p>
-<font color="red"> {% if article.is_blocked == True %}{{ blocked_msg }}{% endif %}</font>
-<hr>
-글 내용 :
-<br>
+<div class="title-area">
+    <p class="title">
+        {% if user.is_authenticated and article.author == user %}
+            {{ article.title }}
+        {% else %}
+            {% if article.is_blocked == True %}{{ blocked_msg }}{% else %}{{ article.title }}{% endif %}
+        {% endif %}
+    </p>
+    <ul class="article-info">
+        <li class> 생성시각 : {{ article.create_dt|date:'Y-m-d H:i' }} </li>
+        {% if article.create_dt != article.modify_dt %}
+            <li> 수정시각 : {{ article.modify_dt|date:'Y-m-d H:i' }} </li>
+        {% endif %}
+        <li> 작성자 : {% if article.author is not None %}{{ article.author.username }}{% else %}<i>Guest</i>{% endif %}</li>
+        <li> 작성IP : {{ article.work_ip }} </li>
+        <li> 조회수 : {{ article.view_cnt }} </li>
+        <li> <font color="red"> {% if article.is_blocked == True %}{{ blocked_msg }}{% endif %}</font> </li>
+    </ul>
+</div>
 
-<!-- 차단된 게시글 본인 확인 가능하도록 수정  -->
-<div id="editor">
-{% if user.is_authenticated and article.author == user %}
-    {% autoescape off %}
-        {{ article.contents|linebreaksbr }}
-    {% endautoescape %}
-{% else %}
-    {% if article.is_blocked == True %}
-        {{ blocked_msg }}
-    {% else %}
-        {% autoescape off %}
-            {{ article.contents|linebreaksbr  }}
-        {% endautoescape %}
-    {% endif %}
-{% endif %}
+<div>
+    <!-- 차단된 게시글 본인 확인 가능하도록 수정  -->
+    <div id="editor">
+        {% if user.is_authenticated and article.author == user %}
+            {% autoescape off %}
+                {{ article.contents|linebreaksbr }}
+            {% endautoescape %}
+        {% else %}
+            {% if article.is_blocked == True %}
+                {{ blocked_msg }}
+            {% else %}
+                {% autoescape off %}
+                    {{ article.contents|linebreaksbr  }}
+                {% endautoescape %}
+            {% endif %}
+        {% endif %}
+    </div>
 </div>
 
 <hr>
@@ -51,24 +122,33 @@
 
 <!-- 작성자 본인이면 수정 버튼 활성화 -->
 {% if user.is_authenticated and article.author == user %}
-    <a href="{% url 'app_board:update_article' article.id %}"><button>수정</button></a>
-    <a href="{% url 'app_board:delete_article' article.id %}"><button>삭제</button></a>
+    <div class="button-area">
+        <a style="float:right" href="{% url 'app_board:delete_article' article.id %}"><button style="background-color:red">삭제</button></a>
+        <a style="float:right" href="{% url 'app_board:update_article' article.id %}"><button>수정</button></a>
+        <!-- 관리자면 검열 버튼 활성화 --><!-- 임시로 루프백 ip로 설정 -->
+        {% if user.is_authenticated and user.is_staff %}
+            <style>
+                .button-blocks {
+                    background-color: black;
+                    color: yellow;
+                    font-weight: bold
+                }
+            </style>
+            {% if article.is_blocked == False %}
+                <a href="{% url 'app_board:block_article' article.id 1 %}"><button class="button-blocks">검열</button></a>
+            {% else %}
+                <a href="{% url 'app_board:block_article' article.id 0 %}"><button class="button-blocks">검열해제</button></a>
+            {% endif %}
+        {% endif %}
+    </div>
 {% endif %}
 
-<!-- 관리자면 검열 버튼 활성화 --><!-- 임시로 루프백 ip로 설정 -->
-{% if user.is_authenticated and user.is_staff %}
-    {% if article.is_blocked == False %}
-        <a href="{% url 'app_board:block_article' article.id 1 %}"><button>검열</button></a>
-    {% else %}
-        <a href="{% url 'app_board:block_article' article.id 0 %}"><button>검열해제</button></a>
-    {% endif %}
-{% endif %}
+
 <hr>
 <form action="{% url 'app_board:write_comment' article.id %}" method="POST">
-
     {% csrf_token %}
-    <input type="text" name="comment">
-
+    {% if user.is_authenticated %} {{ user.username }} &nbsp {% endif %}
+    <input type="text" name="comment" style="height:30px; border-radius:3px; border:1px solid black; box-sizing:border-box">
     <button type="submit">댓글 입력</button>
 </form>
 <hr>
@@ -79,10 +159,16 @@
         <li>{% if comment.author is not None %}
                 [{{ comment.author.username }}]
             {% else %}
-                <i>(미등록 사용자)</i>
+                <i>Guest</i>
              {% endif %}
             <font color="grey">{{ comment.work_ip }} </font> >> {{ comment.contents }}
-            {% if user.is_authenticated and comment.author == user %}<a href="{% url 'app_board:delete_comment' article.id comment.id %}"><button>삭제</button></a>{% endif %}
+            {% if user.is_authenticated and comment.author == user %}
+                <a href="{% url 'app_board:delete_comment' article.id comment.id %}">
+                    <button style="background-color:red; height:20px; width:50px;line-height: 20px;">
+                        삭제
+                    </button>
+                </a>
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
