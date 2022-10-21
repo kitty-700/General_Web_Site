@@ -125,24 +125,25 @@
     <div class="button-area">
         <a style="float:right" href="{% url 'app_board:delete_article' article.id %}"><button style="background-color:red">삭제</button></a>
         <a style="float:right" href="{% url 'app_board:update_article' article.id %}"><button>수정</button></a>
-        <!-- 관리자면 검열 버튼 활성화 --><!-- 임시로 루프백 ip로 설정 -->
-        {% if user.is_authenticated and user.is_staff %}
-            <style>
-                .button-blocks {
-                    background-color: black;
-                    color: yellow;
-                    font-weight: bold
-                }
-            </style>
-            {% if article.is_blocked == False %}
-                <a href="{% url 'app_board:block_article' article.id 1 %}"><button class="button-blocks">검열</button></a>
-            {% else %}
-                <a href="{% url 'app_board:block_article' article.id 0 %}"><button class="button-blocks">검열해제</button></a>
-            {% endif %}
-        {% endif %}
     </div>
 {% endif %}
-
+<div class="button-area">
+    <!-- 관리자면 검열 버튼 활성화 --><!-- 임시로 루프백 ip로 설정 -->
+    {% if user.is_authenticated and user.is_staff %}
+        <style>
+            .button-blocks {
+                background-color: black;
+                color: yellow;
+                font-weight: bold
+            }
+        </style>
+        {% if article.is_blocked == False %}
+            <a href="{% url 'app_board:block_article' article.id 1 %}"><button class="button-blocks">검열</button></a>
+        {% else %}
+            <a href="{% url 'app_board:block_article' article.id 0 %}"><button class="button-blocks">검열해제</button></a>
+        {% endif %}
+    {% endif %}
+</div>
 
 <hr>
 <form action="{% url 'app_board:write_comment' article.id %}" method="POST">
