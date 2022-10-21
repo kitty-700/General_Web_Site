@@ -91,7 +91,25 @@
         {% if article.create_dt != article.modify_dt %}
             <li> 수정시각 : {{ article.modify_dt|date:'Y-m-d H:i' }} </li>
         {% endif %}
-        <li> 작성자 : {% if article.author is not None %}{{ article.author.username }}{% else %}<i>Guest</i>{% endif %}</li>
+        <li> 작성자 :
+            {% if user.is_authenticated and article.author == user %}
+                {% if article.author is not None %}
+                    {{ article.author.username }}
+                {% else %}
+                    <i>Guest</i>
+                {% endif %}
+            {% else %}
+                {% if article.is_blocked == True %}
+                    {{ blocked_msg }}
+                {% else %}
+                    {% if article.author is not None %}
+                        {{ article.author.username }}
+                    {% else %}
+                        <i>Guest</i>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </li>
         <li> 작성IP : {{ article.work_ip }} </li>
         <li> 조회수 : {{ article.view_cnt }} </li>
         <li> <font color="red"> {% if article.is_blocked == True %}{{ blocked_msg }}{% endif %}</font> </li>
@@ -148,7 +166,9 @@
 <hr>
 <form action="{% url 'app_board:write_comment' article.id %}" method="POST">
     {% csrf_token %}
-    {% if user.is_authenticated %} {{ user.username }} &nbsp {% endif %}
+    {% if user.is_authenticated %}
+        {{ user.username }} &nbsp
+    {% endif %}
     <input type="text" name="comment" style="height:30px; border-radius:3px; border:1px solid black; box-sizing:border-box">
     <button type="submit">댓글 입력</button>
 </form>
