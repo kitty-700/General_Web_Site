@@ -6,9 +6,6 @@
         width:100%;
         margin-bottom:20px;
     }
-    a {
-      text-decoration: none;
-    }
     li {
         line-height: 1.5em;
     }
@@ -68,12 +65,30 @@
             <td>    {{ article.id }}  </td>
             <td>
                 <div>
-                    <a href="/app_board/{{ article.id }}"> {% if article.is_blocked == True %}(검열됨){% else %}{{ article.title }}{% endif %}
+                    <a href="/app_board/{{ article.id }}">
+                        {% if user.is_authenticated and article.author == user %}
+                            {{ article.title }}
+                        {% else %}
+                            {% if article.is_blocked == True %}
+                                (검열됨)
+                            {% else %}
+                                {{ article.title }}
+                            {% endif %}
+                        {% endif %}
                         <font color="grey" size=2>[{{ view_cnt_list|return_item:forloop.counter0 }}]</font>
                     </a>
                 </div>
             </td>
-            <td><div> {% if article.is_blocked == True %}(검열됨){% else %}{% if article.author is not None %}{{ article.author.username }}{% else %}<font color="grey">Guest</font>{% endif %}{% endif %} </div></td>
+            <td><div>
+                {% if article.is_blocked == True %}
+                    (검열됨)
+                {% else %}
+                    {% if article.author is not None %}
+                        {{ article.author.username }}
+                    {% else %}
+                        <font color="grey">Guest</font>
+                    {% endif %}
+                {% endif %} </div></td>
             <td><div> {{ article.create_dt|date:'Y-m-d H:i' }} </div></td>
         </tr>
         {% endfor %}
