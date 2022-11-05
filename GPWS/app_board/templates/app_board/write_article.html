@@ -7,13 +7,8 @@
 <form action="" method="POST">
     {% csrf_token %}
 
-    {% for form in forms %}
-    <div>
-        <label for="{{ form.id_for_label }}">{{ form.label }}</label>
-        <br>
-        {{ form }}
-    </div>
-    {% endfor %}
+    {{ form.media }}
+    {{ form.as_p }}
 
     {% if error %}
         {{ error }}
@@ -23,19 +18,6 @@
 </form>
 <br>
 <br>
-
-<script>
-    ClassicEditor
-    .create( document.querySelector('#id_contents'), {
-    // 플러그인 제거 참조 > https://ckeditor.com/docs/ckeditor5/latest/installation/getting-started/configuration.html
-        removePlugins: [ 'MediaEmbed' ], // else ['CKFinderUploadAdapter', 'CKFinder', 'EasyImage', 'Image', 'ImageCaption', 'ImageStyle', 'ImageToolbar', 'ImageUpload', 'MediaEmbed']
-        language: "ko"
-    } )
-    .catch(error => {
-      console.error(error);
-    })
-    ;
-</script>
 <style>
     #id_title{
         width:100%;

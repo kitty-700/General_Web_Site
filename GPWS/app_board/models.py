@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
+from ckeditor_uploader.fields import RichTextUploadingField
 # Create your models here.
 
 # 컬럼 추가/변경 등의 사유로 테이블 재생성 시 다음 요령을 따를 것
@@ -14,7 +15,8 @@ class Article(models.Model):
     id = models.AutoField(primary_key=True)
     # User Manual Fill
     title = models.CharField(max_length=300, null=False)
-    contents = models.CharField(max_length=10000, null=True)
+    contents = RichTextUploadingField(null=True)
+
     # Auto Fill
     create_dt = models.DateTimeField(default=datetime.now)
     modify_dt = models.DateTimeField(default=datetime.now)

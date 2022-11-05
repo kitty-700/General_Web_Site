@@ -51,7 +51,7 @@ class WriteArticle(View):
 
     def get(self, request, *args, **kwargs):
         write_form = ArticleEditForm()
-        self.context['forms'] = write_form
+        self.context['form'] = write_form
         return render(request, 'app_board/write_article.html', self.context)
 
     def post(self, request, *args, **kwargs):
@@ -66,7 +66,7 @@ class WriteArticle(View):
             article.save()
             return redirect('/app_board')
         else:
-            self.context['forms'] = write_form
+            self.context['form'] = write_form
             if write_form.errors:
                 for val in write_form.errors.values():
                     self.context['error'] = val
@@ -84,7 +84,7 @@ class UpdateArticle(View):
             return redirect('/app_board/')
 
         write_form = ArticleEditForm(instance=article)
-        self.context['forms'] = write_form
+        self.context['form'] = write_form
         return render(request, 'app_board/update_article.html', self.context)
 
     def post(self, request, *args, **kwargs):
@@ -101,7 +101,7 @@ class UpdateArticle(View):
             article.save()
             return read_article(request=request, article_id=article_id)
         else:
-            self.context['forms'] = write_form
+            self.context['form'] = write_form
             if write_form.errors:
                 for val in write_form.errors.values():
                     self.context['error'] = val
