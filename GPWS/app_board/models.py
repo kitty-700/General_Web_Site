@@ -33,7 +33,7 @@ class Comment(models.Model):
     # PK 명시
     id = models.AutoField(primary_key=True)
     # Manual Fill
-    contents = models.CharField(max_length=10000)
+    contents = RichTextUploadingField(null=True)
     # Auto Fill
     article = models.ForeignKey(Article, on_delete=models.SET_NULL, null=True)
     create_dt = models.DateTimeField(default=datetime.now)

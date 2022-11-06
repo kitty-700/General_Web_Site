@@ -2,6 +2,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import *
 from .ArticleEditForm import ArticleEditForm
+from .CommentEditForm import CommentEditForm
 from .models import *
 from typing import List
 from django.views.generic import View, TemplateView, FormView
@@ -40,7 +41,7 @@ def read_article(request:WSGIRequest, article_id:int):
         comments = get_list_or_404(Comment, article=article_id)
     except:
         comments = []
-    context = { 'article' : article, 'comments' : comments }
+    context = { 'article' : article, 'comments' : comments, 'comment_form' : CommentEditForm() }
     return render(request, 'app_board/read_article.html', context)
 
 class WriteArticle(View):
@@ -130,15 +131,18 @@ def block_article(request:WSGIRequest, article_id:int, block_tp:int):
 
 def write_comment(request:WSGIRequest, article_id:int):
     if request.method == 'POST':
-        if len(request.POST['comment'].strip()) == 0:
+        if len(request.POST['contents'].strip()) == 0:
             return redirect('/app_board/%s/' % (article_id))
-        comment = Comment(
-            article_id=article_id,
-            contents=request.POST['comment'],
-            author=request.user if isinstance(request.user, User) else None,
-            work_ip=get_client_ip(request)
-        )
-        comment.save()
+        write_form = CommentEditForm(request.POST)
+        if write_form.is_valid():
+            comment = Comment(
+                article_id=article_id,
+                contents=write_form.contents,
+                author=request.user if isinstance(request.user, User) else None,
+                work_ip=get_client_ip(request)
+            )
+            comment.save()
+            return redirect('/app_board/%s/' % (article_id))
     return redirect('/app_board/%s/' % (article_id))
 
 def delete_comment(request:WSGIRequest, article_id:int, comment_id:int):
