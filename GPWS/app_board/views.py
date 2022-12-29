@@ -26,12 +26,35 @@ def audience(request):
 class IndexView(View):
     # 내부적으로 dispatch()을 통해 HTTP Method 를 식별하여 get(), post(),... 등을 호출
     def get(self, request:WSGIRequest): # HTTP Method 가 GET일 때의 동작을 오버라이딩
-        lastest_article_list: List[Article] = Article.objects.all().order_by('-create_dt')[:1000]
-        view_cnt_list: List[int] = []
-        for a in lastest_article_list:
-            view_cnt_list.append(Comment.objects.filter(article=a).count())
+        # (임시) 하드코딩으로 게시판 나눔
+        # 첫번째 Sector
+        lastest_article_list_1: List[Article] = (
+            Article.objects.filter(board__isnull=True) |
+            Article.objects.filter(board=1)
+        ).order_by('-id')[:30]
+        view_cnt_list_1: List[int] = []
+        for a in lastest_article_list_1:
+            view_cnt_list_1.append(Comment.objects.filter(article=a).count())
+        board_nm_1 = Board.objects.filter(id=1)[0].title
 
-        context = {'lastest_article_list': lastest_article_list, 'view_cnt_list': view_cnt_list}
+        # 두번째 Sector
+        lastest_article_list_2: List[Article] = (
+            Article.objects.filter(board=2)
+        ).order_by('-id')[:30]
+        view_cnt_list_2: List[int] = []
+        for a in lastest_article_list_2:
+            view_cnt_list_2.append(Comment.objects.filter(article=a).count())
+        board_nm_2 = Board.objects.filter(id=2)[0].title
+
+        context = {
+            'lastest_article_list_1': lastest_article_list_1,
+            'view_cnt_list_1'       : view_cnt_list_1,
+            'board_nm_1'            : board_nm_1,
+
+            'lastest_article_list_2': lastest_article_list_2,
+            'view_cnt_list_2'       : view_cnt_list_2,
+            'board_nm_2'            : board_nm_2,
+        }
         return render(request, 'app_board/index.html', context)
 
 def read_article(request:WSGIRequest, article_id:int):

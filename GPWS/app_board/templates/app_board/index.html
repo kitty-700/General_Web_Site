@@ -47,8 +47,8 @@
 </style>
 
 {% load template_list %}
-{% if lastest_article_list %}
-
+{% if lastest_article_list_1 %}
+{{ board_nm_1 }}
 <table style="margin-top:20px">
     <thead>
         <tr>
@@ -60,7 +60,7 @@
     </thead>
     <tbody>
         <font color="black" size=3>
-        {% for article in lastest_article_list %}
+        {% for article in lastest_article_list_1 %}
         <tr>
             <td>    {{ article.id }}  </td>
             <td>
@@ -75,7 +75,58 @@
                                 {{ article.title }}
                             {% endif %}
                         {% endif %}
-                        <font color="grey" size=2>[{{ view_cnt_list|return_item:forloop.counter0 }}]</font>
+                        <font color="grey" size=2>[{{ view_cnt_list_1|return_item:forloop.counter0 }}]</font>
+                    </a>
+                </div>
+            </td>
+            <td><div>
+                {% if article.is_blocked == True %}
+                    (검열됨)
+                {% else %}
+                    {% if article.author is not None %}
+                        {{ article.author.username }}
+                    {% else %}
+                        <font color="grey">Guest</font>
+                    {% endif %}
+                {% endif %} </div></td>
+            <td><div> {{ article.create_dt|date:'Y-m-d H:i' }} </div></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>No Articles there</p>
+{% endif %}
+
+{% if lastest_article_list_2 %}
+{{ board_nm_2 }}
+<table style="margin-top:20px">
+    <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>글쓴이</th>
+            <th>작성시각</th>
+        </tr>
+    </thead>
+    <tbody>
+        <font color="black" size=3>
+        {% for article in lastest_article_list_2 %}
+        <tr>
+            <td>    {{ article.id }}  </td>
+            <td>
+                <div>
+                    <a href="/app_board/{{ article.id }}">
+                        {% if user.is_authenticated and article.author == user %}
+                            {{ article.title }}
+                        {% else %}
+                            {% if article.is_blocked == True %}
+                                (검열됨)
+                            {% else %}
+                                {{ article.title }}
+                            {% endif %}
+                        {% endif %}
+                        <font color="grey" size=2>[{{ view_cnt_list_2|return_item:forloop.counter0 }}]</font>
                     </a>
                 </div>
             </td>
