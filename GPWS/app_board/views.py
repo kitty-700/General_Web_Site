@@ -77,6 +77,7 @@ class WriteArticle(View):
                 title=      write_form.title,
                 contents=  write_form.contents,
                 author=request.user if isinstance(request.user, User) else None,
+                board=write_form.board,
                 work_ip=get_client_ip(request)
             )
             article.save()
@@ -114,6 +115,7 @@ class UpdateArticle(View):
             article.title = write_form.title
             article.contents = write_form.contents
             article.modify_dt = datetime.now()
+            article.board = write_form.board
             article.save()
             return read_article(request=request, article_id=article_id)
         else:

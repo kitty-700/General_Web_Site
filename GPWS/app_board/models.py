@@ -10,12 +10,22 @@ from ckeditor_uploader.fields import RichTextUploadingField
 # 3. >> python manage.py makemigrations
 # 4. >> python manage.py migrate
 
+class Board(models.Model):
+    # PK 명시
+    id = models.AutoField(primary_key=True)
+    # User Manual Fill
+    title = models.CharField(max_length=300, null=False)
+
+    def __str__(self):
+        return self.title
+
 class Article(models.Model):
     # PK 명시
     id = models.AutoField(primary_key=True)
     # User Manual Fill
     title = models.CharField(max_length=300, null=False)
     contents = RichTextUploadingField(null=True)
+    board = models.ForeignKey(Board, on_delete=models.SET_NULL, null=True)
 
     # Auto Fill
     create_dt = models.DateTimeField(default=datetime.now)
