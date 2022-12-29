@@ -6,6 +6,7 @@ app_name = 'app_board'
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
+    path('audience/', views.audience, name='audience'),
     path('notice/', TemplateView.as_view(template_name='notice.html')),
     path('write/', WriteArticle.as_view(), name='write_article'),
     path('<int:article_id>/', views.read_article, name='read_article'),

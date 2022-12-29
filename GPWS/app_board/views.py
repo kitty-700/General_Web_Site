@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import AnonymousUser
 from django.core.handlers.wsgi import WSGIRequest
 from django.shortcuts import *
@@ -6,7 +8,20 @@ from .CommentEditForm import CommentEditForm
 from .models import *
 from typing import List
 from django.views.generic import View, TemplateView, FormView
+from django.http import JsonResponse
 
+def audience(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        # do something
+        if data['username'] == '':
+            data['username'] = 'Guest'
+
+        print( "Message from " + data['username'] + " : " + data['audience_msg'])
+        context = {
+            'result': data,
+        }
+        return JsonResponse(context)
 
 class IndexView(View):
     # 내부적으로 dispatch()을 통해 HTTP Method 를 식별하여 get(), post(),... 등을 호출
