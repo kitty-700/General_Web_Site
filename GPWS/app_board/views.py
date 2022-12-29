@@ -15,7 +15,7 @@ def audience(request):
         data = json.loads(request.body)
         # do something
         if data['username'] == '':
-            data['username'] = 'Guest'
+            data['username'] = f'Guest {get_client_ip(request)}'
 
         print( "Message from " + data['username'] + " : " + data['audience_msg'])
         context = {
