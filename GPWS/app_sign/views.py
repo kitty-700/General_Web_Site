@@ -14,12 +14,17 @@ class SignUp(View):
 
     def post(self, request, *args, **kwargs):
         # return 시 가입 페이지에 데이터가 남도록 context 딕셔너리 유지
-        context             = {'user_id': request.POST['user_id']}
 
         user_id             = request.POST['user_id']
         password            = request.POST['password']
         password_confirm    = request.POST['password_confirm']
+        nickname            = request.POST['nickname']
 
+        context             = {'user_id'         : user_id,
+                               'password'        : password,
+                               'password_confirm': password_confirm,
+                               'nickname'        : nickname,
+                               }
         # Fail Case 1. user_id 유효성
         # Fail Case 1-1.
         if re.compile(r'[^a-zA-Z0-9_]').findall(user_id):
@@ -45,9 +50,23 @@ class SignUp(View):
             context['error'] = '비밀번호 확인 값이 다릅니다.'
             return render(request, 'app_sign/sign_up.html', context=context)
 
+        # Fail Case 3. nickname 유효성
+        # Fail Case 3-1.
+        if nickname == '':
+            context['error'] = 'nickname 을 입력해주세요.'
+            return render(request, 'app_sign/sign_up.html', context=context)
+        # Fail Case 3-2.
+        if len(nickname) >= 20:
+            context['error'] = 'nickname 는 25자 미만이어야 합니다.'
+            return render(request, 'app_sign/sign_up.html', context=context)
+        # Fail Case 3-3.
+        if User.objects.filter(first_name=nickname).exists(): # 닉네임 안 적으면 봐줌
+            context['error'] = '이미 존재하는 닉네임입니다.'
+            return render(request, 'app_sign/sign_up.html', context=context)
+
         # Save
         try:
-            user = User.objects.create_user(username=user_id, password=password)
+            user = User.objects.create_user(username=user_id, password=password, first_name=nickname)
         except Exception as ex:
             context['error'] = f'신규 유저 생성 실패 [error:{ str(ex) }]'
             return render(request, 'app_sign/sign_up.html', context=context)
@@ -90,12 +109,12 @@ class Logout(View):
         return redirect('/')
 
 
-# 회원 정보 수정
+# My 페이지
 class MyPage(View):
-    # 내부적으로 dispatch()을 통해 HTTP Method 를 식별하여 get(), post(),... 등을 호출
     def get(self, request, *args, **kwargs):
         return render(request, 'app_sign/my_page.html')
-
+#  My 페이지 - 비밀번호 수정
+class MyPageChangePassword(View):
     def post(self, request, *args, **kwargs):
         context = {'password': ''}
 
@@ -104,18 +123,52 @@ class MyPage(View):
 
         # Fail Case 1. password와 confirm에 입력된 값이 같다면
         if password != password_confirm:
-            context['error'] = '비밀번호 확인 값이 다릅니다.'
+            context['error_password'] = '비밀번호 확인 값이 다릅니다.'
             return render(request, 'app_sign/my_page.html', context=context)
 
         # Fail Case 2. password 공백
         if password == '':
-            context['error'] = '비밀번호를 입력해주세요.'
+            context['error_password'] = '비밀번호를 입력해주세요.'
             return render(request, 'app_sign/my_page.html', context=context)
 
         # Save
         try:
             user = request.user
             user.set_password(password)
+            user.save()
+        except Exception as ex:
+            context['error_password'] = f'변경 실패.... { str(ex) }'
+            return render(request, 'app_sign/my_page.html', context=context)
+
+        # 로그인
+        auth.login(request, user)
+        return redirect('/')
+
+#  My 페이지 - 닉네임 수정
+class MyPageChangeNickname(View):
+    def post(self, request, *args, **kwargs):
+
+        nickname            = request.POST['nickname']
+
+        context = {'nickname': nickname}
+
+        # Fail Case 3-1.
+        if nickname == '':
+            context['error_nickname'] = 'nickname 을 입력해주세요.'
+            return render(request, 'app_sign/my_page.html', context=context)
+        # Fail Case 3-2.
+        if len(nickname) >= 20:
+            context['error_nickname'] = 'nickname 는 25자 미만이어야 합니다.'
+            return render(request, 'app_sign/my_page.html', context=context)
+        # Fail Case 3-3.
+        if User.objects.filter(first_name=nickname).exists(): # 닉네임 안 적으면 봐줌
+            context['error_nickname'] = '이미 존재하는 닉네임입니다.'
+            return render(request, 'app_sign/my_page.html', context=context)
+
+        # Save
+        try:
+            user = request.user
+            user.first_name = nickname
             user.save()
         except Exception as ex:
             context['error'] = f'변경 실패.... { str(ex) }'

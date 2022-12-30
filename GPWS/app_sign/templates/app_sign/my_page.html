@@ -5,24 +5,38 @@
 
 <br>
 <br>
-<form method="POST" action="{% url 'app_sign:my_page' %}">
-    {% csrf_token %}
-    <br>
-    {% if user.is_authenticated %}
-        Hello! {{ user.user_id }}
-    {% endif %}
-    <p>password</p>
-    <input type="password" name="password">
-    <br>
-    <p>confirm</p>
-    <input type="password" name="password_confirm">
-    <br>
-    <br>
-    <input type="submit" value="변경">
-</form>
-
-{% if error %}
-    {{ error }}
+<br>
+{% if user.is_authenticated %}
+    Hello! {{ user.username }}
 {% endif %}
+<div style="background-color: #ff000011;">
+    <form method="POST" action="{% url 'app_sign:my_page_change_password' %}">
+        {% csrf_token %}
+        <p>변경될 password</p>
+        <input type="password" name="password">
+        <br>
+        <p>변경될 password_confirm </p>
+        <input type="password" name="password_confirm">
+        <br>
+        <input type="submit" value="비밀번호 변경">
+    </form>
+    {% if error_password %}
+        {{ error_password }}
+    {% endif %}
+</div>
+
+<div style="background-color: #ff000005;">
+    <form method="POST" action="{% url 'app_sign:my_page_change_nickname' %}">
+        {% csrf_token %}
+        <p>nickname</p>
+        <input type="text" name="nickname">
+        <br>
+        <input type="submit" value="닉네임 변경">
+    </form>
+    {% if error_nickname %}
+        {{ error_nickname }}
+    {% endif %}
+</div>
+
 
 {% endblock %}

@@ -4,25 +4,33 @@
 
 <form method="POST" action="{% url 'app_sign:sign_up' %}">
     {% csrf_token %}
-    <p>user_id</p>
-    <input type="text" name="user_id" value="{% if user_id %}{{ user_id }}{% endif %}"> <!-- 실패 시 page refresh 됨에도 입력한 user_id 를 유지 -->
-    <br>
-    <p>password</p>
-    <input type="password" name="password">
-    <br>
-    <p>confirm</p>
-    <input type="password" name="password_confirm">
-    <br>
-    <br>
-    <input type="checkbox" id="inotabot">
-    <label for="inotabot">나는 봇이 아닙니다</label>
-    <br>
-    <br>
-    <input type="submit" value="회원가입">
+    <div style="background-color: #ff000011;"> 로그인 정보
+        <p>user_id</p>
+        <input type="text" name="user_id" value="{% if user_id %}{{ user_id }}{% endif %}"> <!-- 실패 시 page refresh 됨에도 입력한 user_id 를 유지 -->
+        <br>
+        <p>password</p>
+        <input type="password" name="password" value="{% if password %}{{ password }}{% endif %}">
+        <br>
+        <p>password_confirm</p>
+        <input type="password" name="password_confirm" value="{% if password_confirm %}{{ password_confirm }}{% endif %}">
+    </div>
+    <p></p>
+    <div style="background-color: #ff000005;"> 기타 정보
+        <p> nickname </p>
+        <input type="text" name="nickname" value="{% if nickname %}{{ nickname }}{% endif %}">
+        <br>
+        <br>
+        <input type="checkbox" id="inotabot">
+        <label for="inotabot">나는 봇이 아닙니다</label>
+    </div>
+    <div>
+        <input type="submit" value="회원가입">
+    </div>
 </form>
 
-{% if error %}
-    {{ error }}
-{% endif %}
-
+<div style="background-color: #ff000066;">
+    {% if error %}
+        {{ error }}
+    {% endif %}
+</div>
 {% endblock %}
