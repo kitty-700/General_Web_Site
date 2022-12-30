@@ -29,7 +29,7 @@
     <form method="POST" action="{% url 'app_sign:my_page_change_nickname' %}">
         {% csrf_token %}
         <p>nickname</p>
-        <input type="text" name="nickname">
+        <input type="text" name="nickname" value="{{ user.first_name }}">
         <br>
         <input type="submit" value="닉네임 변경">
     </form>

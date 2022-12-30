@@ -88,7 +88,7 @@
         <li> 작성자 :
             {% if user.is_authenticated and article.author == user %}
                 {% if article.author is not None %}
-                    {{ article.author.username }}
+                    {{ article.author.first_name }}
                 {% else %}
                     <i>Guest</i>
                 {% endif %}
@@ -97,7 +97,7 @@
                     {{ blocked_msg }}
                 {% else %}
                     {% if article.author is not None %}
-                        {{ article.author.username }}
+                        {{ article.author.first_name }}
                     {% else %}
                         <i>Guest</i>
                     {% endif %}
@@ -163,7 +163,7 @@
     {% csrf_token %}
 
     {% if user.is_authenticated %}
-        {{ user.username }} &nbsp
+        {{ user.first_name }} &nbsp
     {% endif %}
 
     {{ comment_form.media }}
@@ -182,9 +182,9 @@
     <ul>
         {% for comment in comments %}
         <li>{% if comment.author is not None %}
-                [{{ comment.author.username }}]
+                [{{ comment.author.first_name }}]
             {% else %}
-                <i>Guest</i>
+                <i>(Guest)</i>
              {% endif %}
 
             <a href="{% url 'app_board:delete_comment' article.id comment.id %}">

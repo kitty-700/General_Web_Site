@@ -85,7 +85,7 @@
                     (검열됨)
                 {% else %}
                     {% if article.author is not None %}
-                        {{ article.author.username }}
+                        {{ article.author.first_name }}
                     {% else %}
                         <font color="grey">Guest</font>
                     {% endif %}
@@ -136,7 +136,7 @@
                     (검열됨)
                 {% else %}
                     {% if article.author is not None %}
-                        {{ article.author.username }}
+                        {{ article.author.first_name }}
                     {% else %}
                         <font color="grey">Guest</font>
                     {% endif %}
