@@ -35,7 +35,7 @@ class IndexView(View):
         view_cnt_list_1: List[int] = []
         for a in lastest_article_list_1:
             view_cnt_list_1.append(Comment.objects.filter(article=a).count())
-        board_nm_1 = Board.objects.filter(id=1)[0].title
+        board_1 = Board.objects.filter(id=1)[0]
 
         # 두번째 Sector
         lastest_article_list_2: List[Article] = (
@@ -44,18 +44,42 @@ class IndexView(View):
         view_cnt_list_2: List[int] = []
         for a in lastest_article_list_2:
             view_cnt_list_2.append(Comment.objects.filter(article=a).count())
-        board_nm_2 = Board.objects.filter(id=2)[0].title
+        board_2 = Board.objects.filter(id=2)[0]
 
         context = {
             'lastest_article_list_1': lastest_article_list_1,
             'view_cnt_list_1'       : view_cnt_list_1,
-            'board_nm_1'            : board_nm_1,
+            'board_1'               : board_1,
 
             'lastest_article_list_2': lastest_article_list_2,
             'view_cnt_list_2'       : view_cnt_list_2,
-            'board_nm_2'            : board_nm_2,
+            'board_2'               : board_2,
         }
         return render(request, 'app_board/index.html', context)
+
+class BoardView(View):
+    def get(self, request:WSGIRequest, board_id:int): # HTTP Method 가 GET일 때의 동작을 오버라이딩
+        if board_id == 1: # 1번 게시판은 특수 취급 -> 게시판 구분 null인 게시물도 포함
+            lastest_article_list: List[Article] = (
+                Article.objects.filter(board__isnull=True) | # 게시판 구분이 없으면 자유게시판으로 취급됨
+                Article.objects.filter(board=board_id)
+            ).order_by('-id')[:30] # 이 부분도 추후 page 에서 한 번에 조회 가능한 개수 넘겨받고 하드코딩 풀면 될듯
+        else:
+            lastest_article_list: List[Article] = (
+                Article.objects.filter(board=board_id)
+            ).order_by('-id')[:30]
+
+        view_cnt_list: List[int] = []
+        for a in lastest_article_list:
+            view_cnt_list.append(Comment.objects.filter(article=a).count())
+        board = Board.objects.filter(id=board_id)[0].title
+
+        context = {
+            'lastest_article_list': lastest_article_list,
+            'view_cnt_list'       : view_cnt_list,
+            'board'               : board,
+        }
+        return render(request, 'app_board/read_board.html', context)
 
 def read_article(request:WSGIRequest, article_id:int):
     ip      = get_client_ip(request)
