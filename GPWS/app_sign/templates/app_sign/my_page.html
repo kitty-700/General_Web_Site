@@ -9,13 +9,13 @@
     {% csrf_token %}
     <br>
     {% if user.is_authenticated %}
-        Hello! {{ user.username }}
+        Hello! {{ user.user_id }}
     {% endif %}
     <p>password</p>
     <input type="password" name="password">
     <br>
     <p>confirm</p>
-    <input type="password" name="confirm">
+    <input type="password" name="password_confirm">
     <br>
     <br>
     <input type="submit" value="변경">

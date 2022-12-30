@@ -4,14 +4,14 @@
 
 <form method="POST" action="{% url 'app_sign:sign_up' %}">
     {% csrf_token %}
-    <p>username</p>
-    <input type="text" name="username" value="{% if username %}{{ username }}{% endif %}">
+    <p>user_id</p>
+    <input type="text" name="user_id" value="{% if user_id %}{{ user_id }}{% endif %}"> <!-- 실패 시 page refresh 됨에도 입력한 user_id 를 유지 -->
     <br>
     <p>password</p>
     <input type="password" name="password">
     <br>
     <p>confirm</p>
-    <input type="password" name="confirm">
+    <input type="password" name="password_confirm">
     <br>
     <br>
     <input type="checkbox" id="inotabot">
