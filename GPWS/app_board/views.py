@@ -66,26 +66,27 @@ class IndexView(View):
 
 class BoardView(View):
     def get(self, request:WSGIRequest, board_id:int): # HTTP Method 가 GET일 때의 동작을 오버라이딩
-        if board_id == 1: # 1번 게시판은 특수 취급 -> 게시판 구분 null인 게시물도 포함
-            lastest_article_list: List[Article] = (
-                Article.objects.filter(board__isnull=True) | # 게시판 구분이 없으면 자유게시판으로 취급됨
-                Article.objects.filter(board=board_id)
-            ).order_by('-id')[:30] # 이 부분도 추후 page 에서 한 번에 조회 가능한 개수 넘겨받고 하드코딩 풀면 될듯
-        else:
-            lastest_article_list: List[Article] = (
-                Article.objects.filter(board=board_id)
-            ).order_by('-id')[:30]
 
-        view_cnt_list: List[int] = []
-        for a in lastest_article_list:
-            view_cnt_list.append(Comment.objects.filter(article=a).count())
-        board = Board.objects.filter(id=board_id)[0].title
+        # Query : BOARD_ID 는 NOT NULL 이어야 함
+        # - UPDATE APP_BOARD_ARTICLE SET BOARD_ID = 1 WHERE BOARD_ID IS NULL;
 
+        DAC = 30  # Default_Article_Cnt
+
+        ib : IndexBoard
+        board: Board = Board.objects.filter(id=board_id)[0]
+        articles: List[Article] = (
+            Article.objects.filter(board=board_id)
+        ).order_by('-id')[:DAC]
+
+        articles_in_board: List[ArticleInBoard] = []
+        for a in articles:
+            articles_in_board.append(ArticleInBoard(a, Comment.objects.filter(article=a).count(), board))
+
+        ib = IndexBoard(articles_in_board, board)
         context = {
-            'lastest_article_list': lastest_article_list,
-            'view_cnt_list'       : view_cnt_list,
-            'board'               : board,
+            'ib': ib,
         }
+
         return render(request, 'app_board/read_board.html', context)
 
 def read_article(request:WSGIRequest, article_id:int):
