@@ -71,7 +71,7 @@
 {# 작성자일 때는 검열여부과 관계없이 표시 #}
 <div class="title-area">
     <p class="board_tp">
-        {{ article.board.title }}
+        <a style="font-weight:bold" href="/app_board/board/{{ article.board.id }}">{{ article.board.title }}</a>
     </p>
     <p class="title">
         {% if user.is_authenticated and article.author == user %}
