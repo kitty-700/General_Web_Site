@@ -23,37 +23,44 @@ def audience(request):
         }
         return JsonResponse(context)
 
+class ArticleInBoard():
+    def __init__(self, article:Article, comment_cnt:int, board:Board):
+        self.article = article
+        self.comment_cnt = comment_cnt
+        self.board = board
+
+    def __str__(self):
+        print(f'{self.board.title} - {self.article.title} ({self.comment_cnt})')
+
+class IndexBoard():
+    def __init__(self, aibs:List[ArticleInBoard], board:Board):
+        self.aibs = aibs
+        self.board = board
+
 class IndexView(View):
     # 내부적으로 dispatch()을 통해 HTTP Method 를 식별하여 get(), post(),... 등을 호출
     def get(self, request:WSGIRequest): # HTTP Method 가 GET일 때의 동작을 오버라이딩
-        # (임시) 하드코딩으로 게시판 나눔
-        # 첫번째 Sector
-        lastest_article_list_1: List[Article] = (
-            Article.objects.filter(board__isnull=True) |
-            Article.objects.filter(board=1)
-        ).order_by('-id')[:10]
-        view_cnt_list_1: List[int] = []
-        for a in lastest_article_list_1:
-            view_cnt_list_1.append(Comment.objects.filter(article=a).count())
-        board_1 = Board.objects.filter(id=1)[0]
+        
+        # Query : BOARD_ID 는 NOT NULL 이어야 함
+        # - UPDATE APP_BOARD_ARTICLE SET BOARD_ID = 1 WHERE BOARD_ID IS NULL;
+        
+        # 각 게시판 개수 별로 나열
+        DAC = 10 # Default_Article_Cnt
 
-        # 두번째 Sector
-        lastest_article_list_2: List[Article] = (
-            Article.objects.filter(board=2)
-        ).order_by('-id')[:10]
-        view_cnt_list_2: List[int] = []
-        for a in lastest_article_list_2:
-            view_cnt_list_2.append(Comment.objects.filter(article=a).count())
-        board_2 = Board.objects.filter(id=2)[0]
+        boards = Board.objects.filter()
+        ibs : List[IndexBoard] = []
+        for b in boards:
+            articles : List[Article] = (
+                Article.objects.filter(board=b.id)
+            ).order_by('-id')[:DAC]
 
+            articles_in_board : List[ArticleInBoard] = []
+            for a in articles:
+                articles_in_board.append(ArticleInBoard(a, Comment.objects.filter(article=a).count(), b))
+
+            ibs.append(IndexBoard(articles_in_board, b))
         context = {
-            'lastest_article_list_1': lastest_article_list_1,
-            'view_cnt_list_1'       : view_cnt_list_1,
-            'board_1'               : board_1,
-
-            'lastest_article_list_2': lastest_article_list_2,
-            'view_cnt_list_2'       : view_cnt_list_2,
-            'board_2'               : board_2,
+            'ibs': ibs,
         }
         return render(request, 'app_board/index.html', context)
 
@@ -84,7 +91,7 @@ class BoardView(View):
 def read_article(request:WSGIRequest, article_id:int):
     ip      = get_client_ip(request)
     article = get_object_or_404(Article, pk=article_id)
-
+    print(article_id)
     try: # 조회수 중복집계 방지
         ViewCheck.objects.get(
             article=article,

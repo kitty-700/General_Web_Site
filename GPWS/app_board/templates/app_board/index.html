@@ -48,108 +48,61 @@
 
 {% load template_list %}
 
-<a style="font-weight:bold" href="/app_board/board/{{ board_1.id }}">{{ board_1.title }}</a>
-{% if lastest_article_list_1 %}
-<table style="margin-top:20px">
-    <thead>
-        <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>글쓴이</th>
-            <th>작성시각</th>
-        </tr>
-    </thead>
-    <tbody>
-        <font color="black" size=3>
-        {% for article in lastest_article_list_1 %}
-        <tr>
-            <td>    {{ article.id }}  </td>
-            <td>
-                <div>
-                    <a href="/app_board/{{ article.id }}">
-                        {% if user.is_authenticated and article.author == user %}
-                            {{ article.title }}
-                        {% else %}
-                            {% if article.is_blocked == True %}
-                                (검열됨)
-                            {% else %}
-                                {{ article.title }}
-                            {% endif %}
-                        {% endif %}
-                        <font color="grey" size=2>[{{ view_cnt_list_1|return_item:forloop.counter0 }}]</font>
-                    </a>
-                </div>
-            </td>
-            <td><div>
-                {% if article.is_blocked == True %}
-                    (검열됨)
-                {% else %}
-                    {% if article.author is not None %}
-                        {{ article.author.first_name }}
-                    {% else %}
-                        <font color="grey">Guest</font>
-                    {% endif %}
-                {% endif %} </div></td>
-            <td><div> {{ article.create_dt|date:'Y-m-d H:i' }} </div></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-    <p>No Articles there</p>
-{% endif %}
+{% for ib in ibs %}
+    <a style="font-weight:bold" href="/app_board/board/{{ ib.board.id }}">{{ ib.board.title }}</a>
 
-<a style="font-weight:bold" href="/app_board/board/{{ board_2.id }}">{{ board_2.title }}</a>
-
-{% if lastest_article_list_2 %}
-<table style="margin-top:20px">
-    <thead>
-        <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>글쓴이</th>
-            <th>작성시각</th>
-        </tr>
-    </thead>
-    <tbody>
-        <font color="black" size=3>
-        {% for article in lastest_article_list_2 %}
-        <tr>
-            <td>    {{ article.id }}  </td>
-            <td>
-                <div>
-                    <a href="/app_board/{{ article.id }}">
-                        {% if user.is_authenticated and article.author == user %}
-                            {{ article.title }}
+    {% if ib.aibs %}
+        <table style="margin-top:20px">
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>글쓴이</th>
+                    <th>작성시각</th>
+                </tr>
+            </thead>
+            <tbody>
+                <font color="black" size=3>
+                {% for aib in ib.aibs %}
+                <tr>
+                    <td>    {{ aib.article.id }}  </td>
+                    <td>
+                        <div>
+                            <a href="/app_board/{{ aib.article.id }}">
+                                {% if user.is_authenticated and aib.article.author == user %}
+                                    {{ aib.article.title }}
+                                {% else %}
+                                    {% if aib.article.is_blocked == True %}
+                                        (검열됨)
+                                    {% else %}
+                                        {{ aib.article.title }}
+                                    {% endif %}
+                                {% endif %}
+                                <font color="grey" size=2>[{{ aib.comment_cnt }}]</font>
+                            </a>
+                        </div>
+                    </td>
+                    <td><div>
+                        {% if aib.article.is_blocked == True %}
+                            (검열됨)
                         {% else %}
-                            {% if article.is_blocked == True %}
-                                (검열됨)
+                            {% if aib.article.author is not None %}
+                                {{ aib.article.author.first_name }}
                             {% else %}
-                                {{ article.title }}
+                                <font color="grey">Guest</font>
                             {% endif %}
-                        {% endif %}
-                        <font color="grey" size=2>[{{ view_cnt_list_2|return_item:forloop.counter0 }}]</font>
-                    </a>
-                </div>
-            </td>
-            <td><div>
-                {% if article.is_blocked == True %}
-                    (검열됨)
-                {% else %}
-                    {% if article.author is not None %}
-                        {{ article.author.first_name }}
-                    {% else %}
-                        <font color="grey">Guest</font>
-                    {% endif %}
-                {% endif %} </div></td>
-            <td><div> {{ article.create_dt|date:'Y-m-d H:i' }} </div></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-    <p>No Articles there</p>
-{% endif %}
+                        {% endif %} </div></td>
+                    <td><div> {{ aib.article.create_dt|date:'Y-m-d H:i' }} </div></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No Articles there</p>
+    {% endif %}
+{% endfor %}
+
+
 <a style="color:#ffffff" href="{% url 'app_board:write_article' %}">
     <div style="width:90px; height:45px; background-color:#278de3; text-align:center; vertical-align: middle; line-height:45px; float:right">글 작성</div></a>
 
