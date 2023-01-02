@@ -31,7 +31,7 @@ class IndexView(View):
         lastest_article_list_1: List[Article] = (
             Article.objects.filter(board__isnull=True) |
             Article.objects.filter(board=1)
-        ).order_by('-id')[:30]
+        ).order_by('-id')[:10]
         view_cnt_list_1: List[int] = []
         for a in lastest_article_list_1:
             view_cnt_list_1.append(Comment.objects.filter(article=a).count())
@@ -40,7 +40,7 @@ class IndexView(View):
         # 두번째 Sector
         lastest_article_list_2: List[Article] = (
             Article.objects.filter(board=2)
-        ).order_by('-id')[:30]
+        ).order_by('-id')[:10]
         view_cnt_list_2: List[int] = []
         for a in lastest_article_list_2:
             view_cnt_list_2.append(Comment.objects.filter(article=a).count())
