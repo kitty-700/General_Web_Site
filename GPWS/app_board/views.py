@@ -23,19 +23,35 @@ def audience(request):
         }
         return JsonResponse(context)
 
-class ArticleInBoard():
-    def __init__(self, article:Article, comment_cnt:int, board:Board):
+
+class ArticleInBoard(): # 단일 게시물에 대한 정보
+    def __init__(self, article: Article, comment_cnt: int):
         self.article = article
         self.comment_cnt = comment_cnt
-        self.board = board
+        self.board = article.board
 
     def __str__(self):
         print(f'{self.board.title} - {self.article.title} ({self.comment_cnt})')
 
 class IndexBoard():
-    def __init__(self, aibs:List[ArticleInBoard], board:Board):
+    def __init__(self, aibs : List[ArticleInBoard], board : Board):
         self.aibs = aibs
         self.board = board
+
+MSG_BLOCKED = "(검열됨)"
+
+def articles_in_board(board : Board, article_cnt:int) -> List[ArticleInBoard]:
+    articles: List[Article] = (
+                                  Article.objects.filter(board=board.id)
+                              ).order_by('-id')[:article_cnt]
+
+    articles_in_board: List[ArticleInBoard] = []
+    for a in articles:
+        articles_in_board.append(
+            ArticleInBoard(a, Comment.objects.filter(article=a).count())
+        )
+
+    return articles_in_board
 
 class IndexView(View):
     # 내부적으로 dispatch()을 통해 HTTP Method 를 식별하여 get(), post(),... 등을 호출
@@ -45,20 +61,20 @@ class IndexView(View):
         # - UPDATE APP_BOARD_ARTICLE SET BOARD_ID = 1 WHERE BOARD_ID IS NULL;
         
         # 각 게시판 개수 별로 나열
-        DAC = 10 # Default_Article_Cnt
+        DAC = 5 # Default_Article_Cnt
 
         boards = Board.objects.filter()
+
         ibs : List[IndexBoard] = []
+
         for b in boards:
-            articles : List[Article] = (
-                Article.objects.filter(board=b.id)
-            ).order_by('-id')[:DAC]
+            ibs.append(
+                IndexBoard(
+                    articles_in_board(b, DAC),
+                    b
+                )
+            )
 
-            articles_in_board : List[ArticleInBoard] = []
-            for a in articles:
-                articles_in_board.append(ArticleInBoard(a, Comment.objects.filter(article=a).count(), b))
-
-            ibs.append(IndexBoard(articles_in_board, b))
         context = {
             'ibs': ibs,
         }
@@ -72,17 +88,13 @@ class BoardView(View):
 
         DAC = 30  # Default_Article_Cnt
 
-        ib : IndexBoard
         board: Board = Board.objects.filter(id=board_id)[0]
-        articles: List[Article] = (
-            Article.objects.filter(board=board_id)
-        ).order_by('-id')[:DAC]
 
-        articles_in_board: List[ArticleInBoard] = []
-        for a in articles:
-            articles_in_board.append(ArticleInBoard(a, Comment.objects.filter(article=a).count(), board))
+        ib : IndexBoard = IndexBoard(
+            articles_in_board(board, DAC),
+            board
+        )
 
-        ib = IndexBoard(articles_in_board, board)
         context = {
             'ib': ib,
         }
