@@ -64,36 +64,45 @@
             <tbody>
                 <font color="black" size=3>
                 {% for aib in ib.aibs %}
-                <tr>
-                    <td>    {{ aib.article.id }}  </td>
-                    <td>
-                        <div>
-                            <a href="/app_board/{{ aib.article.id }}">
-                                {% if user.is_authenticated and aib.article.author == user %}
-                                    {{ aib.article.title }}
-                                {% else %}
-                                    {% if aib.article.is_blocked == True %}
-                                        (검열됨)
-                                    {% else %}
+                    <tr>
+                        <td>    <!-- 게시글 ID -->
+                            {{ aib.article.id }}
+                        </td>   <!-- 게시글 ID [END] -->
+                        <td>    <!-- 게시글 제목 -->
+                            <div>
+                                <a href="/app_board/{{ aib.article.id }}">
+                                    {% if user.is_authenticated and aib.article.author == user %}
                                         {{ aib.article.title }}
+                                    {% else %}
+                                        {% if aib.article.is_blocked == True %}
+                                            (검열됨)
+                                        {% else %}
+                                            {{ aib.article.title }}
+                                        {% endif %}
+                                    {% endif %}
+                                    <font color="grey" size=2>[{{ aib.comment_cnt }}]</font>
+                                </a>
+                            </div>
+                        </td>   <!-- 게시글 제목 [END] -->
+                        <td>    <!-- 게시자 정보 -->
+                            <div>
+                                {% if aib.article.is_blocked == True %}
+                                    (검열됨)
+                                {% else %}
+                                    {% if aib.article.author is not None %}
+                                        {{ aib.article.author.first_name }}
+                                    {% else %}
+                                        <font color="grey">Guest</font>
                                     {% endif %}
                                 {% endif %}
-                                <font color="grey" size=2>[{{ aib.comment_cnt }}]</font>
-                            </a>
-                        </div>
-                    </td>
-                    <td><div>
-                        {% if aib.article.is_blocked == True %}
-                            (검열됨)
-                        {% else %}
-                            {% if aib.article.author is not None %}
-                                {{ aib.article.author.first_name }}
-                            {% else %}
-                                <font color="grey">Guest</font>
-                            {% endif %}
-                        {% endif %} </div></td>
-                    <td><div> {{ aib.article.create_dt|date:'Y-m-d H:i' }} </div></td>
-                </tr>
+                            </div>
+                        </td>   <!-- 게시자 정보 [END] -->
+                        <td>    <!-- 게시일자 -->
+                            <div>
+                                {{ aib.article.create_dt|date:'Y-m-d H:i' }}
+                            </div>
+                        </td>   <!-- 게시일자 [END] -->
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>

@@ -38,8 +38,6 @@ class IndexBoard():
         self.aibs = aibs
         self.board = board
 
-MSG_BLOCKED = "(검열됨)"
-
 def articles_in_board(board : Board, article_cnt:int) -> List[ArticleInBoard]:
     articles: List[Article] = (
                                   Article.objects.filter(board=board.id)

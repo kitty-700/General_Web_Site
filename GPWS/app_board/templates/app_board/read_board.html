@@ -64,8 +64,10 @@
             <font color="black" size=3>
             {% for aib in ib.aibs %}
             <tr>
-                <td>    {{ aib.article.id }}  </td>
-                <td>
+                <td>    <!-- 게시글 ID -->
+                    {{ aib.article.id }}
+                </td>   <!-- 게시글 ID [END] -->
+                <td>    <!-- 게시글 제목 -->
                     <div>
                         <a href="/app_board/{{ aib.article.id }}">
                             {% if user.is_authenticated and aib.article.author == user %}
@@ -80,18 +82,25 @@
                             <font color="grey" size=2>[{{ aib.comment_cnt }}]</font>
                         </a>
                     </div>
-                </td>
-                <td><div>
-                    {% if aib.article.is_blocked == True %}
-                        (검열됨)
-                    {% else %}
-                        {% if aib.article.author is not None %}
-                            {{ aib.article.author.first_name }}
+                </td>   <!-- 게시글 제목 [END] -->
+                <td>    <!-- 게시자 정보 -->
+                    <div>
+                        {% if aib.article.is_blocked == True %}
+                            (검열됨)
                         {% else %}
-                            <font color="grey">Guest</font>
+                            {% if aib.article.author is not None %}
+                                {{ aib.article.author.first_name }}
+                            {% else %}
+                                <font color="grey">Guest</font>
+                            {% endif %}
                         {% endif %}
-                    {% endif %} </div></td>
-                <td><div> {{ aib.article.create_dt|date:'Y-m-d H:i' }} </div></td>
+                    </div>
+                </td>   <!-- 게시자 정보 [END] -->
+                <td>    <!-- 게시일자 -->
+                    <div>
+                        {{ aib.article.create_dt|date:'Y-m-d H:i' }}
+                    </div>
+                </td>   <!-- 게시일자 [END] -->
             </tr>
             {% endfor %}
         </tbody>
@@ -99,6 +108,11 @@
 {% else %}
     <p>No Articles there</p>
 {% endif %}
+<select>
+    <option value="title_contents" selected="selected">제목+내용</option>
+</select>
+<input type="text" placeholder ="(test)" value="" required="" id="search_str" size="15" maxlength="20">
+<input type="submit" value="검색" id="btn_search">
 
 <a style="color:#ffffff" href="{% url 'app_board:write_article' %}">
     <div style="width:90px; height:45px; background-color:#278de3; text-align:center; vertical-align: middle; line-height:45px; float:right">글 작성</div></a>
