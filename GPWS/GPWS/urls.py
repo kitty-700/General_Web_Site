@@ -24,3 +24,4 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 #   re_path(r'^upload/', views.upload, name='ckeditor_upload'),
 #   re_path(r'^browse/', never_cache(views.browse), name='ckeditor_browse'),
 # 기존에는 view 부분에 staff_member_required() 적용되어있었으나 이를 배제
+# ※ 단, url brwose 를 허용할 경우 일반 사용자도 서버 media 폴더에 접근가능하니 주의
