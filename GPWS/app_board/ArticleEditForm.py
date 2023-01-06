@@ -3,6 +3,11 @@ from .models import Article, Board
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 class ArticleEditForm(forms.ModelForm):
+    def __init__(self, board_id : int, *args, **kwargs):
+        super(ArticleEditForm, self).__init__(*args, **kwargs)
+        if board_id is not None:
+            self.fields['board'].initial = board_id
+
     class Meta:
         model = Article
         fields = [

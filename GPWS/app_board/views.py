@@ -131,7 +131,11 @@ class WriteArticle(View):
     context = {}
 
     def get(self, request, *args, **kwargs):
-        write_form = ArticleEditForm()
+        write_form = ArticleEditForm(
+            board_id = # 게시판 별도 지정하는 경우 해당 필드 초기값 세팅
+            kwargs['board_id'] if 'board_id' in kwargs else None
+        )
+        
         self.context['form'] = write_form
         return render(request, 'app_board/write_article.html', self.context)
 

@@ -114,7 +114,7 @@
 <input type="text" placeholder ="(test)" value="" required="" id="search_str" size="15" maxlength="20">
 <input type="submit" value="검색" id="btn_search">
 
-<a style="color:#ffffff" href="{% url 'app_board:write_article' %}">
+<a style="color:#ffffff" href="{% url 'app_board:write_article_in_board' ib.board.id %}">
     <div style="width:90px; height:45px; background-color:#278de3; text-align:center; vertical-align: middle; line-height:45px; float:right">글 작성</div></a>
 
 {% endblock contents %}
