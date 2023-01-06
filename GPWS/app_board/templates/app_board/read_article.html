@@ -159,51 +159,61 @@
 
 <hr>
 
-<form action="{% url 'app_board:write_comment' article.id %}" method="POST">
-    {% csrf_token %}
+<div class="reply">
+    <form action="{% url 'app_board:write_comment' article.id %}" method="POST">
+        {% csrf_token %}
 
-    {% if user.is_authenticated %}
-        {{ user.first_name }} &nbsp
-    {% endif %}
+        {% if user.is_authenticated %}
+            {{ user.first_name }} &nbsp
+        {% endif %}
 
-    {{ comment_form.media }}
-    {{ comment_form.as_p }}
+        {{ comment_form.media }}
+        {{ comment_form.as_p }}
 
-    {% if error %}
-        {{ error }}
-    {% endif %}
-    <br>
-    <button type="submit">댓글 입력</button>
-</form>
+        {% if error %}
+            {{ error }}
+        {% endif %}
+        <br>
+        <button type="submit">댓글 입력</button>
+    </form>
 
-<hr>
-{% if comments %}
-    <font color="grey"> 댓글 </font>
-    <ul>
-        {% for comment in comments %}
-        <li>{% if comment.author is not None %}
-                [{{ comment.author.first_name }}]
-            {% else %}
-                <i>(Guest)</i>
-             {% endif %}
+    <hr>
+    {% if comments %}
+        <font color="grey"> 댓글 </font>
+        <ul>
+            {% for comment in comments %}
+            <li>
+                <!-- ID 표시 -->
+                {% if comment.author is not None %}
+                    [{{ comment.author.first_name }}]
+                {% else %}
+                    <i>(Guest)</i>
+                 {% endif %}
+                <!-- ID 표시 [END] -->
 
-            <a href="{% url 'app_board:delete_comment' article.id comment.id %}">
-                <button style="background-color:red; height:20px; width:50px;line-height: 20px;">
-                    삭제
-                </button>
-            </a>
-            <font color="grey">{{ comment.work_ip }} </font> >>
+
+                <!-- 삭제버튼 표시 -->
+                {% if user.is_authenticated and comment.author == user %}
+                    <a href="{% url 'app_board:delete_comment' article.id comment.id %}">
+                        <button style="background-color:red; height:20px; width:50px;line-height: 20px;">
+                            삭제
+                        </button>
+                    </a>
+                {% endif %}
+                <!-- 삭제버튼 표시 [END] -->
+
+                <font color="grey">{{ comment.work_ip }} </font> >>
 
                 {% autoescape off %}
                     {{ comment.contents|linebreaksbr }}
                 {% endautoescape %}
-            {% if user.is_authenticated and comment.author == user %}
-            {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No Reply there</p>
-{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No Reply there</p>
+    {% endif %}
+</div>
+
 
 {% endblock %}
